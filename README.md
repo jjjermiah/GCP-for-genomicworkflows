@@ -1,4 +1,10 @@
+# Combining Google Cloud Platform tools and Genomic workflow pipelines 
 
+Disclaimer: I am actively learning and exploring the Google Cloud platform, bioinformatics tools, and Snakemake. 
+As a beginner in these domains, I aim to share my journey and progress with others who may find it helpful. 
+Please note that the content provided here may not always reflect the most advanced or expert-level knowledge. 
+Instead, it represents my ongoing learning process as I figure some things out and test my understanding.  
+I encourage feedback, any collaboration, and suggestions from the community! 
 
 # NAME IDEAS:
 GenomeCloud: A comprehensive repository for genome sequencing workflows on the Google Cloud Platform.
