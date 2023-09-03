@@ -23,9 +23,11 @@ In this repo, we utilize the following products from Google Cloud:
 - simple task of using GZIP on fastq files
 
 Looking to learn and incorporate:
+
 5) Google BigQuery
-Eventually: 
-6) Google Cloud Functions | Cloud Run 
+Eventually:
+
+7) Google Cloud Functions | Cloud Run 
 - adding metadata to google cloud storage bucket?
 - performing quality control? 
 - creating vizualizations 
