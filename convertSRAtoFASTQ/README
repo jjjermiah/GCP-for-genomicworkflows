@@ -1,0 +1,163 @@
+
+
+
+snakemake --kubernetes  -j320 --default-remote-provider GS     --default-remote-prefix orcestra-archive/rawdata/     --use-singularity --keep-going 
+
+
+
+
+# Compression of FASTQ files
+``` shell
+export JOB_NAME="compress-fastq-files"
+export REGION_NAME="us-central1"
+export BUCKET_NAME="orcestra-archive"
+export PATH_TO_FASTQ_DIR="rawdata/RNA/FASTQ"
+export PATH_TO_COMPRESSED_DIR="rawdata/RNA/FASTQ_compressed"
+export COMPRESSION="GZIP"
+export VERSION="2023-08-15-00_RC00"
+export PATH_TO_FASTQ_FILES="gs://$BUCKET_NAME/$PATH_TO_FASTQ_DIR/*.fastq"
+export PATH_TO_COMPRESSED_FILES="gs://$BUCKET_NAME/$PATH_TO_COMPRESSED_DIR/"
+export PATH_TO_FAILURE_FILE="gs://$BUCKET_NAME/$PATH_TO_COMPRESSED_DIR/failure.csv"
+
+gcloud dataflow jobs run $JOB_NAME \
+    --gcs-location gs://dataflow-templates-$REGION_NAME/$VERSION/Bulk_Compress_GCS_Files \
+    --region $REGION_NAME \
+    --parameters \
+inputFilePattern=$PATH_TO_FASTQ_FILES,\
+outputDirectory=$PATH_TO_COMPRESSED_FILES,\
+outputFailureFile=$PATH_TO_FAILURE_FILE,\
+compression=$COMPRESSION
+```
+
+
+
+# When files are transfered using the "Data Delivery" method from the SRA database,
+# they are not named correctly
+# The SRA file and the .vdbcache file are in the {snakemake_input} directory
+# First check if they end in .sra and .sra.vdbcache
+# If they do, then run fasterq-dump on {snakemake_input}
+# If they dont' then rename them to .sra and .sra.vdbcache (two parent rules)
+# Then run fasterq-dump on {snakemake_input}
+
+
+``` bash
+export REMOTE_PROVIDER="GS"
+export REMOTE_PREFIX="orcestra-archive/rawdata/"
+
+# Need to use aggregate to get all reference files!!
+# NOTE: THIS IS CURRENTLY NOT ACTING RIGHT. USING `align-info` ON SOME ACCESSIONS IS NOT OUTPUTING ALL THE REQUIRED FILES
+# BYPASS THIS BY JUST DOWNLOADING THE REFERENCE FILES FROM THE SRA FTP SERVER
+snakemake \
+--kubernetes  \
+-j320 \
+--default-remote-provider GS     \
+--default-remote-prefix orcestra-archive/rawdata/     \
+--use-singularity \
+--keep-going aggregate 
+
+# Once all the cachefiles are present, run the fasterq-dump
+snakemake \
+--kubernetes  \
+--default-remote-provider $REMOTE_PROVIDER \
+--default-remote-prefix $REMOTE_PREFIX \
+--use-singularity \
+--keep-going \
+-j200 
+
+```
+
+
+
+
+# Use kubernetes
+``` bash
+export CLUSTER_NAME="snakemake-cluster-100gbdisk"
+export ZONE="northamerica-northeast2-a"
+export NODES=1
+export DISK_SIZE="100GB"
+export MAX_NODES=10
+gcloud container clusters create \
+    $CLUSTER_NAME \
+    --region=$REGION \
+    --num-nodes=$NODES \
+    --machine-type="n1-standard-8" \
+    --scopes storage-rw \
+    --image-type="UBUNTU_CONTAINERD" \
+    --disk-size=$DISK_SIZE \
+    --enable-autoscaling \
+    --max-nodes=$MAX_NODES \
+    --min-nodes=0
+gcloud container clusters get-credentials --zone=$ZONE $CLUSTER_NAME
+
+```
+
+# USE THE COMPLETE AUTOPILOT MODE
+## NOTE THIS IS NOT WORKING FOR SNAKEMAKE!!!! 
+# ``` bash
+export PROJECT_ID="orcestra-388613"
+export CLUSTER_NAME="autopilot-cluster-2"
+export REGION="northamerica-northeast2"
+gcloud container \
+    --project $PROJECT_ID \
+    clusters create-auto $CLUSTER_NAME \
+    --region $REGION \
+    --release-channel "regular" \
+    --network "projects/orcestra-388613/global/networks/default" \
+    --subnetwork "projects/orcestra-388613/regions/us-central1/subnetworks/default" \
+    --cluster-ipv4-cidr "/17"
+
+# gcloud container clusters get-credentials --region=$REGION $CLUSTER_NAME
+
+```
+
+
+
+```
+export CLUSTER_DELETE="gke_orcestra-388613_northamerica-northeast2-a_bigcluster"
+kubectl config delete-cluster $CLUSTER_DELETE
+kubectl config delete-context $CLUSTER_DELETE
+```
+
+
+
+```
+# GS_PREFIX = "ncbi-ccle-data/rawdata/RNA/"
+
+export ACCESSION="SRR1039508"
+fasterq-dump \
+    --split-files \
+    --split-3 \
+    --progress \
+    --details \
+    --threads 8 \
+    --outdir FASTQ \
+    $ACCESSION
+    # --outfile $ACCESSION \
+    
+```
+
+```
+
+
+snakemake \
+    -j 1 \
+    --kubernetes \
+    --default-remote-provider GS \
+    --default-remote-prefix ncbi-ccle-data/rawdata/RNA/ \
+    --use-singularity 
+```
+
+
+
+
+SRR8615924 > GL000198.1
+
+
+GL000197.1
+GL000198.1
+
+GL000206.1
+GL000209.1
+GL000210.1
+
+GL000236.1
