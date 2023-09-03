@@ -1,0 +1,7 @@
+# from slim ubuntu image
+FROM ubuntu:23.10
+
+# install pigz
+RUN apt-get update && apt-get install -y pigz
+
+CMD ["bash"]
