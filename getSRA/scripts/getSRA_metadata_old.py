@@ -1,13 +1,13 @@
-import os
-from google.cloud import storage
-import pysradb
-
-# The goal of this script is to get the metadata for each SRA file in the bucket
+# NOTE::The goal of this script is to get the metadata for each SRA file in the bucket
 # and add it to the metadata of the SRA file in the bucket
 # This was before reworking the pipeline to get metadata before obtaining the SRA files
 
 # Keeping this script for reference
 # Dont think it works right now anyways.
+
+import os
+from google.cloud import storage
+import pysradb
 
 
 # Set the bucket name and path to SRA folders

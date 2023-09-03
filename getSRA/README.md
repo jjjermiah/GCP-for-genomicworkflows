@@ -18,9 +18,10 @@ This link also has good insight on different ways to query the available data.
 There are two jupyter notebooks in `scripts/`:
 
 `scripts/getSRA_BigQuery.ipynb` is a more developed set of steps to use the bigquery API and constructed a SQL to query the BigQuery table. The results are used to create a `csv` and `json` containing the accession IDs and metadata of the SRA data interested in.
+    - after you have configured this notebook with your own query, and all cells in the notebook run without failing to create the `.csv` and `.json` file, save the notebook.
+    - the notebook can (likely will) be included as a step in the snakemake file that downloads the SRA files. 
 
 `scripts/getSRA_pysradb.ipynb` uses an open-source free tool to query the online API. I have not completed the notebook as of writing this.
-
 
 # The second step is to use the metadata to obtain the SRA files 
 
