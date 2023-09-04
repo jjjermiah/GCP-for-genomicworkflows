@@ -22,6 +22,12 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
      --role "roles/storage.objectAdmin" \
      --role "roles/storage.objects.list" 
 ```
+# NOTE: This was an attempt to use Cloud Run to mount a GCS bucket and run Prefetch to store 
+Unfortunately, the limits of Cloud Run built in memory make this very difficult as despite mounting the bucket, any downloads will temporarily use the instance memory before uploading to the bucket.
+However, the docker image and build setup is ready, and this tool might be useful later on.
+- idea: quality control?
+- basic chekcing?
+
 
 ``` bash
 rm Dockerfile
@@ -42,7 +48,8 @@ gcloud run deploy --source . \
     --execution-environment gen2 \
     --allow-unauthenticated \
     --service-account 'orcestra@orcestra-388613.iam.gserviceaccount.com' \
-    --update-env-vars BUCKET=$BUCKET_NAME
+    --update-env-vars BUCKET=$BUCKET_NAME 
+
 
 ## Notable options to consider:
     --command= [COMMAND]    # entrypoint for the container image, otherwise image default Entrypoint is run

@@ -20,20 +20,20 @@ export MNT_DIR='/mnt/gcs'
 mkdir -p $MNT_DIR
 
 echo "Mounting GCS Fuse."
-gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR 
-# gcsfuse -o rw,allow_other \
-#     --file-mode 777 \
-#     --dir-mode 777 \
-#     --foreground \
-#     --debug_gcs \
-#     --debug_fuse \
-#     --implicit-dirs $BUCKET $MNT_DIR
+# gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR 
+gcsfuse -o rw,allow_other \
+    --file-mode 777 \
+    --dir-mode 777 \
+    --foreground \
+    --debug_gcs \
+    --debug_fuse \
+    --implicit-dirs $BUCKET $MNT_DIR
 echo "Mounting completed."
 
 echo "checking sra-downloader"
 # sra-downloader -h
 which prefetch
-prefetch SRR000001
+prefetch SRR000001 -O $MNT_DIR
 echo "done"
 
 ls -la $MNT_DIR 
