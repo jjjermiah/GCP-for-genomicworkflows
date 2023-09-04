@@ -49,12 +49,26 @@
 
 
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: 
-    - build
-    - --network 
-    - cloudbuild 
-    - --no-cache 
-    - -t 
-    - us-central1-docker.pkg.dev/orcestra-388613/cloud-run-source-deploy/build10 
-    - .
+- name: "gcr.io/cloud-builders/gcloud:latest"
+    args:
+      - run
+      - deploy
+      - build20
+      - --source
+      - .
+      - --execution-environment
+      - gen2
+      - --allow-unauthenticated
+      - --service-account
+      - orcestra@orcestra-388613.iam.gserviceaccount.com
+      - --update-env-vars
+      - BUCKET=orcestra-testcloudrun
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: 
+#     - build
+#     - --network 
+#     - cloudbuild 
+#     - --no-cache 
+#     - -t 
+#     - us-central1-docker.pkg.dev/orcestra-388613/cloud-run-source-deploy/build10 
+#     - .
