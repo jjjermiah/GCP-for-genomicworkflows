@@ -72,4 +72,4 @@ steps:
     - --no-cache 
     - -t 
     - us-central1-docker.pkg.dev/orcestra-388613/cloud-run-source-deploy/build30
-    - .
+    - getSRA/build/.
