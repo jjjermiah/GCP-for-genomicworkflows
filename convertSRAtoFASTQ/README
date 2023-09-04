@@ -1,4 +1,10 @@
 
+# This is a snakemake pipeline to convert SRA files to FASTQ files
+# The pipeline is designed to run on Google Cloud Platform (GCP)
+# The pipeline is designed to run on a Kubernetes cluster
+# The pipeline is designed to run on a Google Cloud Storage (GCS) bucket
+
+
 
 
 snakemake --kubernetes  -j320 --default-remote-provider GS     --default-remote-prefix orcestra-archive/rawdata/     --use-singularity --keep-going 
