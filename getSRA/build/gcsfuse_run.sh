@@ -15,28 +15,29 @@
 # [START cloudrun_fuse_script]
 #!/usr/bin/env bash
 set -eo pipefail
-
+export MNT_DIR='/mnt/gcs'
 # Create mount directory for service
 mkdir -p $MNT_DIR
 
 echo "Mounting GCS Fuse."
-# gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR 
-gcsfuse -o rw,allow_other \
-    --file-mode 777 \
-    --dir-mode 777 \
-    --foreground \
-    --debug_gcs \
-    --debug_fuse \
-    --implicit-dirs $BUCKET $MNT_DIR
+gcsfuse --debug_gcs --debug_fuse $BUCKET $MNT_DIR 
+# gcsfuse -o rw,allow_other \
+#     --file-mode 777 \
+#     --dir-mode 777 \
+#     --foreground \
+#     --debug_gcs \
+#     --debug_fuse \
+#     --implicit-dirs $BUCKET $MNT_DIR
 echo "Mounting completed."
 
-echo "Testing sra-downloader" 
-sra-downloader -h
-
-echo "sra-downloader test complete"
-
+echo "checking sra-downloader"
+# sra-downloader -h
+which prefetch
+echo "done"
 
 ls -la $MNT_DIR 
+
+
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
 # For environments with multiple CPU cores, increase the number of workers

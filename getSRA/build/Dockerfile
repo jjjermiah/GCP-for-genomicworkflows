@@ -1,6 +1,18 @@
-# Use the official lightweight Python image.
-# https://hub.docker.com/_/python
+FROM ubuntu:latest as build
+ARG VERSION=current
+RUN apt-get update && apt-get --quiet install --yes curl uuid-runtime && apt-get clean
+RUN curl https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/${VERSION}/sratoolkit.${VERSION}-centos_linux64-cloud.tar.gz | tar xz -C /
+ENV PATH=/usr/local/ncbi/sra-tools/bin:${PATH}
+RUN mkdir -p /root/.ncbi && \
+    printf '/LIBS/IMAGE_GUID = "%s"\n' `uuidgen` > /root/.ncbi/user-settings.mkfg && \
+    printf '/libs/cloud/report_instance_identity = "true"\n' >> /root/.ncbi/user-settings.mkfg \
+    printf '/libs/cloud/accept_aws_charges = "true"\n/libs/cloud/accept_gcp_charges = "true"\n' >> /root/.ncbi/user-settings.mkfg
+
 FROM python:3.11-buster
+COPY --from=build /etc/ncbi /etc/ncbi
+COPY --from=build /usr/local/ncbi /usr/local/ncbi
+COPY --from=build /root/.ncbi /root/.ncbi
+ENV PATH=/usr/local/ncbi/sra-tools/bin:${PATH}
 
 # Install system dependencies
 RUN set -e; \
@@ -31,6 +43,10 @@ RUN pip install gunicorn==20.1.0
 
 # Ensure the script is executable
 RUN chmod +x /app/gcsfuse_run.sh
+
+
+RUN prefetch --version
+
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini

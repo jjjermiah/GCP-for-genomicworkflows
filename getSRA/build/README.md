@@ -38,7 +38,7 @@ Might take some time to do both but for convenience since the build needs to cop
 export BUCKET_NAME='orcestra-testcloudrun'
 export RUN_NAME='filesystem-app'
 
-gcloud run deploy $RUN_NAME --source . \
+gcloud run deploy --source . \
     --execution-environment gen2 \
     --allow-unauthenticated \
     --service-account 'orcestra@orcestra-388613.iam.gserviceaccount.com' \
@@ -59,6 +59,9 @@ gcloud run deploy $RUN_NAME --source . \
 
 ```
 TODO:: add in variable to set region. fine for now as the CLI asks you what region
+
+# Something weird about how the gcloud run deploy 
+I think something in my environment changes how the build works. 
 
 #### Build Image using CI/CD
 Using the Google Cloud Build tool to build on commit 
