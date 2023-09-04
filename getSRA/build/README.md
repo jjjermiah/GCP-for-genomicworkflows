@@ -28,7 +28,14 @@ rm Dockerfile
 cp Dockerfile.gcsfuse Dockerfile
 ```
 
+
+ # Build image and deploy
+
+#### Combine build and deploy
+Might take some time to do both but for convenience since the build needs to copy the application code anyways 
+
 ``` bash
+export BUCKET_NAME='orcestra-testcloudrun'
 export RUN_NAME='filesystem-app'
 
 gcloud run deploy $RUN_NAME --source . \
@@ -36,5 +43,22 @@ gcloud run deploy $RUN_NAME --source . \
     --allow-unauthenticated \
     --service-account 'orcestra@orcestra-388613.iam.gserviceaccount.com' \
     --update-env-vars BUCKET=$BUCKET_NAME
-```
 
+## Notable options to consider:
+    --command= [COMMAND]    # entrypoint for the container image, otherwise image default Entrypoint is run
+    --args=[ARG,...]        # comma-separated arguments passed to the command run by the container image
+    --cpu=$CPU               # CPU limit in GKU cpu units, see gcloud run reploy --help for more details
+    --min-instances=$MIN_INSTANCES
+    --max-instances=$MAX_INSTANCES
+    --set-env-vars=[KEY=VALUE,...]      # list of k-v pairs to set as environment variables, ALL EXISTING ENV VARIABLES WILL BE REMOVED
+    --update-env-vars=[KEY=VALUE,...]   # same as above without removal
+    --set-secrets=[KEY=VALUE,...]       # list of k-v pairs to set as secrets
+    --update-secrets=[KEY=VALUE,...]    # ...
+    --cpu-boost
+
+
+```
+TODO:: add in variable to set region. fine for now as the CLI asks you what region
+
+#### Build Image using CI/CD
+Using the Google Cloud Build tool to build on commit 

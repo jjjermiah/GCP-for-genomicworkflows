@@ -8,25 +8,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+# Pull the container image (for --cache-from to compare)
 steps:
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args: ['-c', 'docker pull ${_DEPLOY_REGION}-docker.pkg.dev/orcestra-388613/bhklab-docker-repo/${_IMAGE_NAME}:latest || exit 0']
+
+# Build image using docker
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - '${_DEPLOY_REGION}-docker.pkg.dev/orcestra-388613/bhklab-docker-repo/${_IMAGE_NAME}:latest'
+    - '--cache-from'  # Add this line to enable build caching
+    - '${_DEPLOY_REGION}-docker.pkg.dev/orcestra-388613/bhklab-docker-repo/${_IMAGE_NAME}:latest'  # Specify the image to use as cache source
+    - '.'
   - id: "Deploy to Cloud Run"
     name: "gcr.io/cloud-builders/gcloud:latest"
     args:
-      - beta
       - run
       - deploy
       - ${_SERVICE_NAME}
-      - --source=.
-      - --execution-environment=gen2
-      - --vpc-connector=${_CONNECTOR}
-      - --update-env-vars=FILESTORE_IP_ADDRESS=${_FILESTORE_IP_ADDRESS},FILE_SHARE_NAME=${_FILESHARE}
       - --region=${_DEPLOY_REGION}
-      - --no-allow-unauthenticated
+      - '--image'
+      - '${_DEPLOY_REGION}-docker.pkg.dev/orcestra-388613/bhklab-docker-repo/downloadsra:latest'
+      - --execution-environment=gen2
+      - --update-env-vars=BUCKET=$BUCKET_NAME
+      - --allow-unauthenticated
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_DEPLOY_REGION}-docker.pkg.dev/orcestra-388613/bhklab-docker-repo/${_IMAGE_NAME}:latest']
 
 substitutions:
   _SERVICE_NAME: filesystem
   _DEPLOY_REGION: us-central1
-  _FILESHARE: vol1
-  _CONNECTOR: my-run-connector
-  _FILESTORE_IP_ADDRESS: 0.0.0.0
+  _BUCKET_NAME: 'orcestra-testcloudrun'
+  _SERVICE_ACCOUNT: 'orcestra@orcestra-388613.iam.gserviceaccount.com'

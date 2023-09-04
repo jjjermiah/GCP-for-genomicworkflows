@@ -30,6 +30,12 @@ gcsfuse -o rw,allow_other \
     --implicit-dirs $BUCKET $MNT_DIR
 echo "Mounting completed."
 
+echo "Testing sra-downloader" 
+sra-downloader -h
+
+echo "sra-downloader test complete"
+
+
 ls -la $MNT_DIR 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
