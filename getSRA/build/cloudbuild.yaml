@@ -63,6 +63,7 @@
 #     - orcestra@orcestra-388613.iam.gserviceaccount.com
 #     - --update-env-vars
 #     - BUCKET=orcestra-testcloudrun
+steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: 
     - build
