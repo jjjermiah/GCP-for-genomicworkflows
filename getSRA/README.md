@@ -17,10 +17,10 @@ This link also has good insight on different ways to query the available data.
     - using open-source tools such as `pysradb` (https://github.com/saketkc/pysradb)
 There are two jupyter notebooks in `notebooks/`:
 
-`notebooks/getSRA_BigQuery.ipynb` is a more developed set of steps to use the bigquery API and constructed a SQL to query the BigQuery table. The results are used to create a `csv` and `json` containing the accession IDs and metadata of the SRA data interested in.
-    - after you have configured this notebook with your own query, and all cells in the notebook run without failing to create the `.csv` and `.json` file, save the notebook.
-    - the notebook can (likely will) be included as a step in the snakemake file that downloads the SRA files. 
-    - the saved metadata files should be in the `main_dir/metadata` directory as `sra_metadata.{json, csv}`
+`notebooks/getSRA_BigQuery.ipynb` is a more developed set of steps to use the bigquery API and constructed a SQL to query the BigQuery table. The results are used to create a `csv`  containing the accession IDs and metadata of the SRA data interested in.
+    - after you have configured this notebook with your own query, and all cells in the notebook run without failing to create the `.csv` file, save the notebook.
+    - the notebook can (unless we use kubernetes) be included as a step in the snakemake pipeline that downloads the SRA files. 
+    - the saved metadata files should be in the `main_dir/metadata` directory as `sra_metadata.{csv}`
 
 
 `notebooks/getSRA_pysradb.ipynb` uses an open-source free tool to query the online API. I have not completed the notebook as of writing this.
