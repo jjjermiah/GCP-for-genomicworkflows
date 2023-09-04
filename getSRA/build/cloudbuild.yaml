@@ -46,23 +46,21 @@
 #   _DEPLOY_REGION: us-central1
 #   _BUCKET_NAME: 'orcestra-testcloudrun'
 #   _SERVICE_ACCOUNT: 'orcestra@orcestra-388613.iam.gserviceaccount.com'
-
-
 steps:
 - name: "gcr.io/cloud-builders/gcloud:latest"
-    args:
-      - run
-      - deploy
-      - build20
-      - --source
-      - .
-      - --execution-environment
-      - gen2
-      - --allow-unauthenticated
-      - --service-account
-      - orcestra@orcestra-388613.iam.gserviceaccount.com
-      - --update-env-vars
-      - BUCKET=orcestra-testcloudrun
+  args:
+    - run
+    - deploy
+    - build20
+    - --source
+    - .
+    - --execution-environment
+    - gen2
+    - --allow-unauthenticated
+    - --service-account
+    - orcestra@orcestra-388613.iam.gserviceaccount.com
+    - --update-env-vars
+    - BUCKET=orcestra-testcloudrun
 # - name: 'gcr.io/cloud-builders/docker'
 #   args: 
 #     - build
