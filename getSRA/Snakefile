@@ -9,7 +9,10 @@ from google.cloud import storage
 sra_docker = "docker://jjjermiah/sratools:0.2"
 pigz_docker = "docker://jjjermiah/pigz:0.9"
 
-SRA_METADATA_FILE = "../metadata/sra_metadata.csv"
+SRA_METADATA_FILE = "metadata/sra_metadata.csv"
+
+# path to STORE SRA folders 
+PATH_TO_SRA = "rawdata/RNA/SRA"
 
 # Get the SRA metadata
 sra_metadata = pd.read_csv(SRA_METADATA_FILE)
@@ -21,11 +24,13 @@ print(sra_metadata.iloc[0])
 
 rule all:
     input:
-        "hi.txt"
+        f"{PATH_TO_SRA}/hi.txt"
 
 rule download_sra:
     output:
-        "hi.txt"
+        f"{PATH_TO_SRA}/hi.txt"
+    container:
+        sra_docker
     shell:
         """
         echo "hi" > {output}
