@@ -56,6 +56,8 @@ steps:
     - .
     - --execution-environment
     - gen2
+    - --region
+    - us-central1
     - --allow-unauthenticated
     - --service-account
     - orcestra@orcestra-388613.iam.gserviceaccount.com
