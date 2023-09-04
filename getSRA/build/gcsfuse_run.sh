@@ -33,6 +33,7 @@ echo "Mounting completed."
 echo "checking sra-downloader"
 # sra-downloader -h
 which prefetch
+prefetch SRR000001
 echo "done"
 
 ls -la $MNT_DIR 
