@@ -1,0 +1,32 @@
+from os.path import join, basename,dirname
+import re
+import pandas as pd
+from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
+from google.cloud import storage
+
+# snakemake --kubernetes  -j2 --default-remote-provider GS     --default-remote-prefix orcestra-archive/     --use-singularity --keep-going 
+
+sra_docker = "docker://jjjermiah/sratools:0.2"
+pigz_docker = "docker://jjjermiah/pigz:0.9"
+
+SRA_METADATA_FILE = "../metadata/sra_metadata.csv"
+
+# Get the SRA metadata
+sra_metadata = pd.read_csv(SRA_METADATA_FILE)
+
+# Get the SRA accessions
+sra_accessions = sra_metadata["run_accession"].tolist()
+
+print(sra_metadata.iloc[0])
+
+rule all:
+    input:
+        "hi.txt"
+
+rule download_sra:
+    output:
+        "hi.txt"
+    shell:
+        """
+        echo "hi" > {output}
+        """
