@@ -1,9 +1,14 @@
 FROM ubuntu:latest
 
+# Set VERSION to 3.0.7
+ARG VERSION=3.0.7
+
 RUN apt-get update \
 	&& apt-get install -y wget libxml-libxml-perl pigz
 
-RUN wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.0.7/sratoolkit.3.0.7-ubuntu64.tar.gz -O /tmp/sratoolkit.tar.gz \
+RUN wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/${VERSION}/sratoolkit.${VERSION}-ubuntu64.tar.gz -O /tmp/sratoolkit.tar.gz \
 	&& tar zxvf /tmp/sratoolkit.tar.gz -C /opt/ && rm /tmp/sratoolkit.tar.gz
 
 ENV PATH="/opt/sratoolkit.${VERSION}-ubuntu64/bin/:${PATH}"
+
+RUN pigz --version

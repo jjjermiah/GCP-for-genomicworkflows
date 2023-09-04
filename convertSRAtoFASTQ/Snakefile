@@ -91,21 +91,21 @@ rule gzip_FASTQ:
         "pigz -9 {input} -c > {output}"
         
 
-# rule convertSRAtoFASTQ:
-#     input:
-#         get_sra_input_files,
-#         cachefiles="rawdata/cachefiles/"
-#     output:
-#         "rawdata/RNA/FASTQ/{run}_1.fastq",
-#         "rawdata/RNA/FASTQ/{run}_2.fastq"
-#     resources:
-#         machine_type = high_cpu
-#     threads: 
-#         threads = 7
-#     container:
-#         sra_docker
-#     script:
-#         "scripts/convertSRAtoFASTQ.sh"
+rule convertSRAtoFASTQ:
+    input:
+        get_sra_input_files,
+        cachefiles="rawdata/cachefiles/"
+    output:
+        "rawdata/RNA/FASTQ/{run}_1.fastq",
+        "rawdata/RNA/FASTQ/{run}_2.fastq"
+    resources:
+        machine_type = high_cpu
+    threads: 
+        threads = 7
+    container:
+        sra_docker
+    script:
+        "scripts/convertSRAtoFASTQ.sh"
 
 
 
