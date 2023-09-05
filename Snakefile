@@ -21,8 +21,8 @@ sra_metadata = pd.read_csv(SRA_METADATA_FILE)
 
 # # Get the SRA accessions
 sra_accessions = sra_metadata["run_accession"].tolist()
-sra_accessions = 'SRR8615581'
-
+# sra_accessions = 'SRR8615581'
+sra_accessions = sra_accessions[0:5]
 #### CONFIGURE RESOURCES
 # resources:
 small_cpu = "e2-standard-8"
@@ -36,7 +36,7 @@ machine_dict = {
     "high_cpu": high_cpu,
     "high_mem": high_mem
 }
-
+print(sra_metadata.columns)
 rule all: 
     input:
         expand("{PATH_TO_DATA}/FASTQ/{run}_{split}.fastq.gz", PATH_TO_DATA=PATH_TO_DATA, run=sra_accessions, split=[1,2]) 
@@ -52,20 +52,67 @@ rule convertSRAtoFASTQ:
     threads:
         threads = 7
     container:
-        sra_docker
+        sratoolkit_docker
     script:
         "scripts/convertSRAtoFASTQ.sh"        
         # "hi.txt"
 
+def get_disk_mb(wildcards):
+    # use wildcards.run to get the 'size_in_gb' from the sra_metadata
+    size_in_gb = sra_metadata[sra_metadata['run_accession'] == wildcards.run]['size_in_GB'].values[0]
+
+    # return the size in MB and add 10% for overhead
+    return int((size_in_gb * 1000)*1.1)
+
+
 rule download_sra:
     output:
         sra_zipped="{PATH_TO_DATA}/SRA/{run}.tar.gz",
-        reflist="{PATH_TO_DATA}/SRA/{run}_refs.csv",
         filelist="{PATH_TO_DATA}/SRA/{run}_files.txt"
     container:
         sratoolkit_docker
+    threads:
+        threads = 1
+    resources:
+        disk_mb = get_disk_mb
     script:
         "scripts/getSRA.sh"
+
+### THIS SECTION IS REGARDING THE REFERENCE FILES
+
+# input function for the rule aggregate to make sure all required cache files exist
+def get_all_cache_files(wildcards):
+    # decision based on content of output file
+    # Important: use the method open() of the returned file!
+    # This way, Snakemake is able to automatically download the file if it is generated in
+    # a cloud environment without a shared filesystem.
+    with checkpoints.create_all_refseqs.get().output[0].open() as f:
+        # read in every line of the file and return it as a list
+        return ["cachefiles/" + line.strip() for line in f]
+
+checkpoint create_all_refseqs: 
+    input:
+        reflist=expand("{PATH_TO_DATA}/cachefiles/{run}_refs.csv", PATH_TO_DATA=PATH_TO_DATA, run=sra_accessions)
+    output:
+        "rawdata/RNA/refseqlists/all_refseqs.csv"
+    resources:
+        machine_type = med_cpu
+    retries: 2
+    script:
+        "scripts/create_all_refseqs.py"
+
+# the output here is to remove ambiguity
+rule create_ref_seq_list:
+    output:
+       run_refs="{PATH_TO_DATA}/cachefiles/{run}_refs.csv"
+    container:
+        sratoolkit_docker
+    retries: 5
+    threads:
+        1
+    shell:
+        "/opt/sratoolkit.3.0.7-ubuntu64/bin/align-info --ref ${wildcards.run} > ${output}"
+
 
 
 

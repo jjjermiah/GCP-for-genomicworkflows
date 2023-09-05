@@ -18,15 +18,19 @@ echo "$SRA_DIR"
 /opt/sratoolkit.3.0.7-ubuntu64/bin/prefetch ${snakemake_wildcards['run']} -O $SRA_DIR
 
 # 
-echo "Getting Reference List"
+# echo "Getting Reference List"
 
 # create reference list for alignment in case incorrect download or reference files cannot be accessed
-/opt/sratoolkit.3.0.7-ubuntu64/bin/align-info --ref ${snakemake_wildcards['run']} > ${snakemake_output[1]}
-echo "Done Getting Reference List"
+# /opt/sratoolkit.3.0.7-ubuntu64/bin/align-info --ref ${snakemake_wildcards['run']} > ${snakemake_output[1]}
+# echo "Done Getting Reference List"
 
 echo "Getting List of Files Downloaded"
 # create list of files downloaded
-ls -1 $SRA_DIR/${snakemake_wildcards['run']} > ${snakemake_output[2]}
+ls -1 $SRA_DIR/${snakemake_wildcards['run']} > ${snakemake_output[1]}
+
+# remove all files in the SRA_DIR except the SRA files
+echo "Removing all files in SRA_DIR except SRA files"
+find $SRA_DIR/${snakemake_wildcards['run']} -type f ! -name "*${snakemake_wildcards['run']}*" -delete
 
 # compress the folder with the SRA files
 echo "Compressing SRA Files"
