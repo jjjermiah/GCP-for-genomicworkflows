@@ -10,14 +10,12 @@ from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 FTP = FTPRemoteProvider()
 GS = GSRemoteProvider()
-# from google.cloud import storage
 
 # snakemake --kubernetes --default-remote-provider GS     --default-remote-prefix orcestra-archive/     --use-singularity --keep-going  -j2 
 
 # TODO:: think of a better naming for my dockers. sratools:0.2 is specifically for fasterq-dump
 sratoolkit_docker= "docker://jjjermiah/sratoolkit:0.2"
 pigz_docker = "docker://jjjermiah/pigz:0.9"
-
 
 #### CONFIGURE RESOURCES
 # resources:`
@@ -33,7 +31,7 @@ machine_dict = {
     "high_mem": high_mem
 }
 
-PROJECT_NAME="CCLE"
+# PROJECT_NAME="gCSI"
 
 REF_SPECIES = config["ref"]["SPECIES"]
 REF_DATATYPE = config["ref"]["REF_DATATYPE"]
@@ -41,35 +39,33 @@ REF_BUILD = config["ref"]["REF_BUILD"]
 REF_RELEASE = config["ref"]["REF_RELEASE"]
 
 # end each path with / 
-ref_path = f"reference_genomes/{REF_SPECIES}/{REF_RELEASE}/{REF_BUILD}/"
-rawdata_path = f"rawdata/{PROJECT_NAME}/"
-procdata_path = f"processed_data/{PROJECT_NAME}/"
 
 
 ######### 
 # Project specific data
-
-# # path to STORE SRA folders 
+# PROJECT_NAME = "CCLE"
 SRA_METADATA_FILE = "metadata/sra_metadata.csv"
-
-# # Get the SRA metadata
 sra_metadata = pd.read_csv(SRA_METADATA_FILE)
+sample_accessions = sra_metadata["run_accession"].tolist()
+# sample_accessions = 'SRR8615581'
+sample_accessions = sample_accessions[1]
+# SRA_METADATA_FILE = "metadata/gCSI_metadata.csv"
+# gCSI_metadata = pd.read_csv(gCSI_METADATA_FILE)
+# sample_accessions = "586986_1"
 
-# # Get the SRA accessions
-sra_accessions = sra_metadata["run_accession"].tolist()
-# sra_accessions = 'SRR8615581'
-sra_accessions = sra_accessions[1]
 
 
 include: "workflow/rules/ref_data.smk"
+include: "workflow/rules/get_SRA_FASTQ.smk"
 
+
+ref_path = f"reference_genomes/{REF_SPECIES}/{REF_RELEASE}/{REF_BUILD}/"
 rule all: 
     input:
-        expand("results/CIRI2/{sample}.tsv", sample=sra_accessions),
-        # expand("{sample}_{split}_fastqc.done", sample=sra_accessions, split=[1,2]),
-        # expand(join(procdata_path, "alignment/{sample}.sam"), PATH_TO_DATA=PATH_TO_DATA, sample=sra_accessions)
-        # expand(join(rawdata_path, "FASTQ/{sample}_{split}.fastq.gz", PATH_TO_DATA=PATH_TO_DATA, sample=sra_accessions, split=[1,2]),
-        # expand("cachefiles/all_refseqs.csv", PATH_TO_DATA=PATH_TO_DATA),
+        expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
+        expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
+        # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),
+        # expand(join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"), sample=sample_accessions)
 
 rule bowtie2_build:
     input:
@@ -78,19 +74,20 @@ rule bowtie2_build:
         multiext(join(ref_path, "genome.fa"), "", ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2")
     conda:
         "envs/bowtie2.yaml"
-    threads: 8
+    threads: 
+        8
     shell:
         "v2.6.0/bio/bowtie2/build"
 
 rule CIRI2:
     input:
-        sam=join(procdata_path, "alignment/{sample}.sam"),
+        sam=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"),
         gtf=join(ref_path, "annotation.gtf"),
         idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa")
     output:
-        CIRI2= "results/CIRI2/{sample}.tsv"
+        CIRI2= "results/{PROJECT_NAME}/CIRI2/{sample}.tsv"
     threads: 20
-    log: "log/CIRI2/{sample}.log"
+    log: "log/{PROJECT_NAME}/CIRI2/{sample}.log"
     container:
         "docker://andremrsantos/ciri2:latest"
     resources:
@@ -104,15 +101,18 @@ rule CIRI2:
         --ref_file {input.idx[0]} \
         --log {log}"""
 
+def get_fastq_pe(wildcards):
+    if wildcards.PROJECT_NAME == "CCLE":
+        return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.fastq.gz")]
+    elif wildcards.PROJECT_NAME == "gCSI":
+        return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
+
 rule bwa_mem:
     input:
-        reads=[
-            join(rawdata_path, "FASTQ/{sample}_1.fastq.gz"), 
-            join(rawdata_path, "FASTQ/{sample}_2.fastq.gz")
-            ],
+        get_fastq_pe,
         idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     output:
-        output=join(procdata_path, "alignment/{sample}.sam")
+        output=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam")
     params:
         extra=r"-R '@RG\tID:{wildcards.sample}\tSM:{wildcards.sample}'"
     conda:
@@ -162,7 +162,7 @@ rule build_bwa_index:
 
 # rule fastqc:
 #     input:
-#         fq=join(rawdata_path, "FASTQ/{sample}_{split}.fastq.gz")
+#         fq=join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_{split}.fastq.gz")
 #     output:
 #         html="QC/fastqc/{sample}_{split}.html",
 #         zip="QC/fastqc/{sample}_{split}fastqc.zip", # the suffix _fastqc.zip is necessary for multiqc to find the file. If not using multiqc, you are free to choose an arbitrary filename
