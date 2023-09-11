@@ -101,6 +101,7 @@ rule CIRI2:
         --ref_file {input.idx[0]} \
         --log {log}"""
 
+# 
 def get_fastq_pe(wildcards):
     if wildcards.PROJECT_NAME == "CCLE":
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.fastq.gz")]
@@ -133,31 +134,6 @@ rule build_bwa_index:
     wrapper:
         "v2.6.0/bio/bwa/index"
 
-
-# rule circexplorer_parse:
-#     input: "align/{sample}_star/Chimeric.out.junction"
-#     output: "circrna/circexplorer/{sample}_bsj.bed"
-#     log: "log/{sample}_ce_parse.log"
-#     threads: 4
-#     conda: "envs/circexplorer.yaml"
-#     shell: """
-#     CIRCexplorer2 parse -t STAR -b {output} {input} > {log}
-#     """
-
-# rule circexplorer_annotate:
-#     input: "circrna/circexplorer/{sample}_bsj.bed"
-#     output: "circrna/circexplorer/{sample}_circRNA.tsv"
-#     log: "log/{sample}_ce_annotate.log"
-#     threads: 4
-#     conda: "envs/circexplorer.yaml"
-#     params:
-#         ref = config["ref"]["bwa"],
-#         pred = config["ref"]["pred"]
-#     shell: """
-#     CIRCexplorer2 annotate \
-#     -g {params.ref} -r {params.pred} \
-#     -b {input} -o {output} > {log}
-#     """
 
 
 # rule fastqc:

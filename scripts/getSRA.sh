@@ -17,13 +17,6 @@ echo "$SRA_DIR"
 # prefetch files to SRA_DIR
 /opt/sratoolkit.3.0.7-ubuntu64/bin/prefetch ${snakemake_wildcards['run']} -O $SRA_DIR
 
-# 
-# echo "Getting Reference List"
-
-# create reference list for alignment in case incorrect download or reference files cannot be accessed
-# /opt/sratoolkit.3.0.7-ubuntu64/bin/align-info --ref ${snakemake_wildcards['run']} > ${snakemake_output[1]}
-# echo "Done Getting Reference List"
-
 echo "Getting List of Files Downloaded"
 # create list of files downloaded
 ls -1 $SRA_DIR/${snakemake_wildcards['run']} > ${snakemake_output[1]}
