@@ -100,7 +100,7 @@ checkpoint get_sra_ref_seqs:
     threads:
         1
     shell:
-        "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 > {output}"
+        "/usr/local/bin/align-info SRR{wildcards.sra_acc} | cut -d ',' -f1 > {output}"
 
 rule download_refseqs:
     output:
