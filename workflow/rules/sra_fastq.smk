@@ -93,14 +93,14 @@ checkpoint get_sra_ref_seqs:
     output:
         "{any_path}/SRA/ref_lists/SRR{sra_acc}_refs.csv"
     container:
-        sratoolkit_docker
+        "docker://ncbi/sra-tools"
     retries: 5
     threads:
         1
-    script:
-        "../scripts/create_refseq_list.sh"    
-    # shell:
-    #     "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
+    shell:
+        "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
+    # script:
+    #     "../scripts/create_refseq_list.sh"    
 
 rule download_refseqs:
     output:
