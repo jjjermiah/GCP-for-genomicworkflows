@@ -42,7 +42,6 @@ rule sra_to_fastq:
         fq2="{any_path}/FASTQ/SRR{sra_acc}_2.fastq"
     resources:
         machine_type = machines['high_mem']['name'],
-    group: "sra_fastq"
     threads:
         threads = 8
     container:
@@ -64,7 +63,6 @@ rule compress_fastq:
         fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq",
     output:
         fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq.gz"
-    group: "sra_fastq"
     threads:
         threads = 8
     container:
@@ -86,7 +84,7 @@ rule compress_fastq:
 # the output here is to remove ambiguity
 checkpoint get_sra_ref_seqs:
     output:
-        "rawdata/reflists/SRR{sra_acc}_refs.csv"
+        "rawdata/ref_lists/SRR{sra_acc}_refs.csv"
     container:
         "docker://jjjermiah/sratoolkit:0.2"
     retries: 5

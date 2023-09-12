@@ -4,7 +4,9 @@ rule star_index:
         gtf=join(ref_path, "annotation.gtf"),
     output:
         directory(join(ref_path, "{genome}", "STAR_INDEX"))
-    threads: 1
+    threads: 32
+    resources:
+        machine_type = "n1-highmem-32"
     conda:
         "../envs/star.yaml"
     params:

@@ -14,7 +14,8 @@ echo "Compressing SRA Files"
 ls -laR $SRA_DIR/SRR${snakemake_wildcards['sra_acc']}/
 # pigz -9 -r $SRA_DIR/${snakemake_wildcards['run']} -c > ${snakemake_output[0]}
 tar -I pigz -cf ${snakemake_output[0]} $SRA_DIR/SRR${snakemake_wildcards['sra_acc']}/
-
+ls -laR $SRA_DIR
+ls -laR ${snakemake_output[0]} 
 # To decompress:
 # tar -I pigz -xf compressed_folder.tar.gz -C /path/to/destination/directory
  
