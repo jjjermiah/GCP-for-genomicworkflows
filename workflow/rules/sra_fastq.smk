@@ -35,56 +35,56 @@ def get_sample_refseqs(wildcards):
 # it just prevents this rule from being used for non-SRA fastq files
 rule sra_to_fastq:
     input:
-        get_sample_refseqs,
-        "{any_path}/SRA/SRR{sra_acc}.tar.gz"
+        refs=get_sample_refseqs,
+        sra="rawdata/{PROJECT_NAME}/SRA/{sample}.tar.gz"
     output:
-        fq1="{any_path}/FASTQ/SRR{sra_acc}_1.fastq",
-        fq2="{any_path}/FASTQ/SRR{sra_acc}_2.fastq"
+        fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
+        fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz"
     resources:
         machine_type = machines['high_mem']['name'],
     threads:
-        threads = 8
+        threads = 32
     container:
         sratoolkit_docker
     log:
         stderr=os.path.join(
-            config["log_dir"], "{any_path}/FASTQ/SRR", "{sra_acc}", "fasterq_dump.stderr.log"
+            config["log_dir"], "rawdata/{PROJECT_NAME}/FASTQ/{sample}_fasterq_dump.stderr.log"
         ),
         stdout=os.path.join(
-            config["log_dir"], "{any_path}/FASTQ/SRR", "{sra_acc}", "fasterq_dump.stdout.log"
+            config["log_dir"], "rawdata/{PROJECT_NAME}/FASTQ/{sample}_fasterq_dump.stdout.log"
         ),
     script:
         "../scripts/convertSRAtoFASTQ.sh"        
         # "hi.txt"
 
-rule compress_fastq:
-    "Compress fastq inplace with pigz at best (9) compression level."
-    input:
-        fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq",
-    output:
-        fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq.gz"
-    threads:
-        threads = 8
-    container:
-        pigz_docker
-    log:
-        stderr=os.path.join(
-            config["log_dir"], "{any_path}/FASTQ/SRR","{sra_acc}", "compress_fastq_{split}.stderr.log"
-        ),
-        stdout=os.path.join(
-            config["log_dir"], "{any_path}/FASTQ/SRR", "{sra_acc}", "compress_fastq_{split}.stdout.log"
-        ),
-    shell:
-        """
-        pigz --best --processes {threads} {input.fq}; \
-        1> {log.stdout} 2> {log.stderr}; \
-        touch {output}; \
-        """
+# rule compress_fastq:
+#     "Compress fastq inplace with pigz at best (9) compression level."
+#     input:
+#         fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq",
+#     output:
+#         fq="{any_path}/FASTQ/SRR{sra_acc}_{split}.fastq.gz"
+#     threads:
+#         threads = 8
+#     container:
+#         pigz_docker
+#     log:
+#         stderr=os.path.join(
+#             config["log_dir"], "{any_path}/FASTQ/SRR","{sra_acc}", "compress_fastq_{split}.stderr.log"
+#         ),
+#         stdout=os.path.join(
+#             config["log_dir"], "{any_path}/FASTQ/SRR", "{sra_acc}", "compress_fastq_{split}.stdout.log"
+#         ),
+#     shell:
+#         """
+#         pigz --best --processes {threads} {input.fq}; \
+#         1> {log.stdout} 2> {log.stderr}; \
+#         touch {output}; \
+#         """
 
 # the output here is to remove ambiguity
 checkpoint get_sra_ref_seqs:
     output:
-        "rawdata/ref_lists/SRR{sra_acc}_refs.csv"
+        "rawdata/ref_lists/{sample}_refs.csv"
     container:
         "docker://jjjermiah/sratoolkit:0.2"
     retries: 5

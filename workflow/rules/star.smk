@@ -3,7 +3,7 @@ rule star_index:
         fasta=join(ref_path, "genome.fa"),
         gtf=join(ref_path, "annotation.gtf"),
     output:
-        directory(join(ref_path, "{genome}", "STAR_INDEX"))
+        directory(join(ref_path, "STAR_INDEX"))
     threads: 32
     resources:
         machine_type = "n1-highmem-32"
@@ -12,7 +12,7 @@ rule star_index:
     params:
         extra="",
     log:
-        "logs/star_index_{genome}.log",
+        "logs/star_index_genome.log",
     shell:
         """
         STAR \
@@ -24,72 +24,53 @@ rule star_index:
         --genomeDir {output}
         """
 
-# rule create_index_star:
-#     """
-#         Create index for STAR alignments
-#     """
-#     input:
-#         genome=join(ref_path, "genome.fa"),
-#         gtf=join(ref_path, "annotation.gtf"),
-#     output:
-#         chromosome_info = join(ref_path, "STAR_INDEX", "chrNameLength.txt"),
-#         chromosomes_names = join(ref_path, "STAR_INDEX", "chrName.txt"),
-#     container:
-#         "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
-
-
-
-
-#Generate Star genome index
-## genomeSAindexNbases calculated to 9,557860944 (...min(14, log2(GenomeLength)/2 - 1))
-# STAR --runThreadN 4 --runMode genomeGenerate --genomeSAindexNbases 9 --genomeDir /proj/uppstore2017134/stress/circ/star-genome9 \
-# --genomeFastaFiles /*.fa --sjdbGTFfile NC_003112.gff
-
-# rule create_index_star:
-#     """
-#         Create index for STAR alignments
-#     """
-#     input:
-#         genome=join(ref_path, "genome.fa"),
-#         gtf=join(ref_path, "annotation.gtf"),
-#     output:
-#         chromosome_info = join(ref_path, "STAR_INDEX", "chrNameLength.txt"),
-#         chromosomes_names = join(ref_path, "STAR_INDEX", "chrName.txt"),
-#     params:
-#         cluster_log_path=config["cluster_log_dir"],
-#         output_dir=lambda wildcards, output: os.path.dirname(output.chromosome_info),
-#         outFileNamePrefix=os.path.join(
-#             config["star_indexes"], "{organism}", "{index_size}", "STAR_index/STAR_"
-#         ),
-#         sjdbOverhang="{index_size}",
-#         additional_params=parse_rule_config(
-#             rule_config,
-#             current_rule=current_rule,
-#             immutable=(
-#                 "--runMode",
-#                 "--sjdbOverhang",
-#                 "--genomeDir",
-#                 "--genomeFastaFiles",
-#                 "--outFileNamePrefix",
-#                 "--sjdbGTFfile",
-#             ),
-#         ),
-#     container:
-#         "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
-#     conda:
-#         "../envs/STAR.yaml"
-#     threads: 8
-#     resources:
-#         mem_mb=lambda wildcards, attempt: 32000 * attempt,
-#     shell:"""
-#         STAR \
-#         --runMode genomeGenerate \
-#         --sjdbOverhang {params.sjdbOverhang} \
-#         --genomeDir {params.output_dir} \
-#         --genomeFastaFiles {input.genome} \
-#         --runThreadN {threads} \
-#         --outFileNamePrefix {params.outFileNamePrefix} \
-#         --sjdbGTFfile {input.gtf}) \
-#         {params.additional_params} \
-#         1> {log.stdout} 2> {log.stderr}
-#         """
+rule star_pe_multi:
+    input:
+        # use a list for multiple fastq files for one sample
+        # usually technical replicates across lanes/flowcells
+        # fq1=["reads/{sample}_R1.1.fastq", "reads/{sample}_R1.2.fastq"],
+        # # paired end reads needs to be ordered so each item in the two lists match
+        # fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
+        fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
+        fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz",
+        # path to STAR reference genome index
+        idx=directory(join(ref_path, "STAR_INDEX"))
+    output:
+        # see STAR manual for additional output files
+        aln="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam",
+        log="{procdata}/{PROJECT_NAME}/logs/pe/{sample}/{sample}_Log.out",
+        sj="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_SJ.out.tab",
+        chim_junc="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_Chimeric.out.junction",
+        unmapped=["{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
+    # log:
+    #     "logs/pe/{sample}.log",
+    params:
+        # optional parameters
+        extra="--chimScoreMin 1 \
+                --chimSegmentMin 20 \
+                --alignIntronMax 1000000 \
+                --alignTranscriptsPerReadNmax 100000 \
+                --outFilterMismatchNoverReadLmax 0.02 \
+                --outSAMtype BAM SortedByCoordinate \
+                --outFilterMultimapNmax 2 \
+                --chimOutType Junctions SeparateSAMold \
+                --twopassMode Basic"
+    threads: 32
+    wrapper:
+        "v2.6.0/bio/star/align"
+    # """
+    # STAR \
+    # --genomeDir $genomeDir \
+    # --readFilesCommand gunzip -c --readFilesIn $inFile1 $inFile2 \
+    # --runThreadN $nThreads \
+    # --chimSegmentMin $chimSegMin \
+    # --chimScoreMin 1 \
+    # --alignIntronMax $alignIntronMax \
+    # --outFilterMismatchNoverReadLmax $maxMismatchFraction \
+    # --alignTranscriptsPerReadNmax $alignTxPerReadMax \
+    # --twopassMode Basic \
+    # --outSAMtype BAM SortedByCoordinate \
+    # --chimOutType Junctions SeparateSAMold \
+    # --outFilterMultimapNmax 2 \
+    # --outFileNamePrefix $outPrefix
+    # """

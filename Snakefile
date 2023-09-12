@@ -17,7 +17,6 @@ GS = GSRemoteProvider()
 sratoolkit_docker= "docker://jjjermiah/sratoolkit:0.2"
 pigz_docker = "docker://jjjermiah/pigz:0.9"
 
-
 # PROJECT_NAME="gCSI"
 reference_genome = config["ref"]
 ######### 
@@ -27,7 +26,7 @@ SRA_METADATA_FILE = "metadata/sra_metadata.csv"
 sra_metadata = pd.read_csv(SRA_METADATA_FILE)
 sample_accessions = sra_metadata["run_accession"].tolist()
 # sample_accessions = 'SRR8615581'
-sample_accessions = sample_accessions[1]
+sample_accessions = sample_accessions[1:10]
 # SRA_METADATA_FILE = "metadata/gCSI_metadata.csv"
 # gCSI_metadata = pd.read_csv(gCSI_METADATA_FILE)
 # sample_accessions = "586986_1"
@@ -46,7 +45,7 @@ ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_
 rule all: 
     input:
         expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
-        directory(join(ref_path, "genome", "STAR_INDEX"))
+        expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE")
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
         # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),
         # expand(join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"), sample=sample_accessions)
@@ -62,9 +61,6 @@ rule bowtie2_build:
         8
     shell:
         "v2.6.0/bio/bowtie2/build"
-
-
-
 
 include: "workflow/rules/reference_genome.smk"
 include: "workflow/rules/sra_fastq.smk"
