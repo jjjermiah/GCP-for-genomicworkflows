@@ -1,6 +1,6 @@
 rule bwa_mem:
     input:
-        get_fastq_pe,
+        reads=get_fastq_pe,
         idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     output:
         output=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam")
@@ -8,6 +8,8 @@ rule bwa_mem:
         extra=r"-R '@RG\tID:{wildcards.sample}\tSM:{wildcards.sample}'"
     conda:
         "envs/bwa_mem.yaml"
+    group:
+        "bwa"
     threads: 32
     resources:
         machine_type = machines['high_mem']['name']
@@ -21,5 +23,7 @@ rule build_bwa_index:
         idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     params:
         algorithm="bwtsw",
+    group:
+        "bwa"
     wrapper:
         "v2.6.0/bio/bwa/index"

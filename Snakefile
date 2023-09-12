@@ -66,7 +66,7 @@ rule bowtie2_build:
 
 
 include: "workflow/rules/reference_genome.smk"
-include: "workflow/rules/get_SRA_FASTQ.smk"
+include: "workflow/rules/sra_fastq.smk"
 include: "workflow/rules/fastqc.smk"
 include: "workflow/rules/circularRNA.smk"
 include: "workflow/rules/bwa.smk"

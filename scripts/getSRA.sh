@@ -1,25 +1,9 @@
 #!/bin/bash
-echo "test"
-
-# # echo "${snakemake_wildcards['run']}" > ${snakemake_output[0]}
-# export SRA_FILES=$(dirname ${snakemake_output[0]})
-# echo $SRA_FILES
-# export SRA_DIR=$(dirname $SRA_FILES)
-# echo $SRA_DIR
-
-# export SRA_DIR=$(dirname $SRA_FILES)
-# echo $SRA_DIR
-echo "${snakemake_output[0]}"
 
 export SRA_DIR=$(dirname ${snakemake_output[0]})
-echo "$SRA_DIR"
 
 # prefetch files to SRA_DIR
 /opt/sratoolkit.3.0.7-ubuntu64/bin/prefetch ${snakemake_wildcards['run']} -O $SRA_DIR
-
-echo "Getting List of Files Downloaded"
-# create list of files downloaded
-ls -1 $SRA_DIR/${snakemake_wildcards['run']} > ${snakemake_output[1]}
 
 # remove all files in the SRA_DIR except the SRA files
 echo "Removing all files in SRA_DIR except SRA files"

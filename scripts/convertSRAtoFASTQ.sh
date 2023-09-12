@@ -27,7 +27,14 @@ cd $path_to_SRA_folder
 
 echo "ls -la" 
 ls -lah
-
+# shell:
+#     """
+#     fasterq-dump {params.outdir} --outdir {params.outdir} \
+#         --mem {resources.mem_mb}MB --threads {threads} \
+#         --temp {resources.tmpdir} \
+#         1> {log.stdout} 2> {log.stderr}; \
+#     touch {output.flag}
+#     """
 # Fasterq-dump is a tool from the SRA toolkit that converts SRA files to FASTQ files
 echo "Beginning Fasterq-dump"
 fasterq-dump \
@@ -35,7 +42,8 @@ fasterq-dump \
     --progress \
     --details \
     --threads ${snakemake[threads]} \
-    ${snakemake_wildcards['run']}
+    ${snakemake_wildcards['run']} \
+    1> ${snakemake_log['stdout']} 2> ${snakemake_log['stderr']} 
 
 # The fastq files should be in the same directory that has the SRR_____ folder with all the files for the run 
 echo "The current working directory is: $(pwd) and has the following fastq files:"
