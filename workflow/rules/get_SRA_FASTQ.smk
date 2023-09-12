@@ -19,7 +19,7 @@ rule sra_to_fastq:
         fq1="{any_path}/FASTQ/SRR{sra_acc}_1.fastq.gz",
         fq2="{any_path}/FASTQ/SRR{sra_acc}_2.fastq.gz"
     resources:
-        machine_type = high_cpu
+        machine_type = machines['med_cpu']['name']
     threads:
         threads = 7
     container:
@@ -29,12 +29,11 @@ rule sra_to_fastq:
         # "hi.txt"
 
 def get_disk_mb(wildcards):
-    # try opening the sra_metadata file and if fails raise exception telling user to make one
     try:
-        sra_metadata = pd.read_csv("metadata/sra_metadata.csv")
         # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
-        size_in_gb = sra_metadata[sra_metadata['sra_accession'] == wildcards.sample]['size_in_GB'].values[0]
         # return the size in MB and add 10% for overhead
+        sra_metadata = pd.read_csv("metadata/sra_metadata.csv")
+        size_in_gb = sra_metadata[sra_metadata['sra_accession'] == wildcards.sample]['size_in_GB'].values[0]
         return int((size_in_gb * 1000)*1.1)
     except:
         raise Exception("Please create a sra_metadata.csv using the jupyter notebook in metadata/ or disable the resources parameter in download_sra")
@@ -68,7 +67,7 @@ rule download_refseqs:
     output:
         "{any_path}/SRA/cachefiles/{refseq}"
     resources:
-        machine_type = med_cpu
+        machine_type = machines['med_cpu']['name']
     retries: 5
     threads:
         1

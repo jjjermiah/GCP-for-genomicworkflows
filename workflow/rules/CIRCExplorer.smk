@@ -5,22 +5,20 @@
 # STAR --runThreadN 4 --runMode genomeGenerate --genomeSAindexNbases 9 --genomeDir /proj/uppstore2017134/stress/circ/star-genome9 \
 # --genomeFastaFiles /*.fa --sjdbGTFfile NC_003112.gff
 
-rule star_index:
-    input:
-        fasta=join(ref_path, "genome.fa"),
-        gtf=join(ref_path, "annotation.gtf"),
-    output:
-        index=join(ref_path, "STAR_INDEX", "chrNameLength.txt"),
-        directory(join(ref_path, "STAR_INDEX"))
-    message:
-        "Testing STAR index"
-    threads: 1
-    params:
-        extra="",
-    log:
-        "logs/star_index_{genome}.log",
-    wrapper:
-        "v2.6.0/bio/star/index"
+# rule star_index:
+#     input:
+#         fasta=join(ref_path, "genome.fa"),
+#         gtf=join(ref_path, "annotation.gtf"),
+#     output:
+#         index=join(ref_path, "STAR_INDEX", "chrNameLength.txt"),
+#         directory(join(ref_path, "STAR_INDEX"))
+#     threads: 1
+#     params:
+#         extra="",
+#     log:
+#         "logs/star_index_{genome}.log",
+#     wrapper:
+#         "v2.6.0/bio/star/index"
 
 
 # rule: 

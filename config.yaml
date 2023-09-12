@@ -4,7 +4,7 @@ ref:
   REF_BUILD : "GRCh38"            # GRCh38 or GRCh37 spec = BUILD (converts build into string depending on 37 or 38)
   REF_RELEASE :  "release-110"
 
-machines:
+machine_type:
   small_cpu :
     name : "e2-standard-8"
   med_cpu :

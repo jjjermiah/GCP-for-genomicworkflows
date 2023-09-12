@@ -10,7 +10,7 @@ rule bwa_mem:
         "envs/bwa_mem.yaml"
     threads: 32
     resources:
-        machine_type = high_mem
+        machine_type = machines['high_mem']['name']
     shell:
         "bwa mem -t {threads} {params.extra} {input.idx[0]} {input.reads} > {output}"
         

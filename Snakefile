@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 configfile: "config.yaml"
-
+machines = config['machine_type']
 # snakemake can implicitly use the --defaultremoteprovider and --defaultremoteprefix from command line for a given bucket
 # but we use this for the data that might not be in that specific bucket
 from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
@@ -77,7 +77,7 @@ rule CIRI2:
     container:
         "docker://andremrsantos/ciri2:latest"
     resources:
-        machine_type = high_mem
+        machine_type = machines['small_cpu']['name']
     shell:
         """CIRI2 \
         --thread_num {threads} \
