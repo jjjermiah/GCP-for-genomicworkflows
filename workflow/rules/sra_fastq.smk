@@ -29,9 +29,7 @@ rule download_sra:
 def get_sample_refseqs(wildcards):
    # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
     with checkpoints.get_sra_ref_seqs.get(**wildcards).output[0].open() as f:
-        # get first element of comma separated line
-        # first_element=f.readline().split(",")[0]
-        refseqs = ["tools/cachefiles/" + line.split(",")[0] for line in f]
+        refseqs = ["rawdata/{PROJECT_NAME}/cachefiles/" + line for line in f]
     # return the size in MB and add 10% for overhead
     return refseqs
 
@@ -93,14 +91,14 @@ checkpoint get_sra_ref_seqs:
     output:
         "{any_path}/SRA/ref_lists/SRR{sra_acc}_refs.csv"
     container:
-        "docker://ncbi/sra-tools"
+        "docker://jjjermiah/sratoolkit:0.2"
     retries: 5
     threads:
-        1
-    shell:
-        "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
-    # script:
-    #     "../scripts/create_refseq_list.sh"    
+        2
+    script:
+        "../scripts/create_refseq_list.sh"    
+    # shell:
+    #     "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
 
 rule download_refseqs:
     output:

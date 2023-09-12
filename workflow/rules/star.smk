@@ -4,18 +4,23 @@ rule star_index:
         gtf=join(ref_path, "annotation.gtf"),
     output:
         directory(join(ref_path, "{genome}", "STAR_INDEX"))
+    threads: 1
     conda:
         "../envs/star.yaml"
-    container:
-        "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
-    threads: 1
     params:
         extra="",
     log:
         "logs/star_index_{genome}.log",
-    wrapper:
-        "v2.6.0/bio/star/index"
-
+    shell:
+        """
+        STAR \
+        --runThreadN {threads} \
+        --runMode genomeGenerate \
+        --genomeFastaFiles {input.fasta} \
+        --sjdbOverhang 99 \
+        --sjdbGTFfile {input.gtf} \
+        --genomeDir {output}
+        """
 
 # rule create_index_star:
 #     """
