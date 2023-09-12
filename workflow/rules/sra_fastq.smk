@@ -15,21 +15,18 @@
 
 rule download_sra:
     output:
-        sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz",
-        filelist="{any_path}/SRA/SRR{sra_acc}_files.txt"
+        sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz"
     container:
         sratoolkit_docker
     threads:
         threads = 1
-    # resources:
-    #     disk_mb = get_disk_mb
     script:
         "../scripts/getSRA.sh"
 # Rules to specifically get SRA data
 def get_sample_refseqs(wildcards):
    # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
     with checkpoints.get_sra_ref_seqs.get(**wildcards).output[0].open() as f:
-        refseqs = ["rawdata/{PROJECT_NAME}/cachefiles/" + line for line in f]
+        refseqs = ["rawdata/cachefiles/" + line.strip() for line in f]
     # return the size in MB and add 10% for overhead
     return refseqs
 
@@ -89,12 +86,12 @@ rule compress_fastq:
 # the output here is to remove ambiguity
 checkpoint get_sra_ref_seqs:
     output:
-        "{any_path}/SRA/ref_lists/SRR{sra_acc}_refs.csv"
+        "rawdata/reflists/SRR{sra_acc}_refs.csv"
     container:
         "docker://jjjermiah/sratoolkit:0.2"
     retries: 5
     threads:
-        2
+        1
     script:
         "../scripts/create_refseq_list.sh"    
     # shell:
@@ -102,7 +99,7 @@ checkpoint get_sra_ref_seqs:
 
 rule download_refseqs:
     output:
-        "{any_path}/SRA/cachefiles/{refseq}"
+        "rawdata/cachefiles/{refseq}"
     resources:
         machine_type = machines['med_cpu']['name']
     retries: 5

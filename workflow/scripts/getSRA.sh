@@ -11,7 +11,7 @@ export SRA_DIR=$(dirname ${snakemake_output[0]})
 
 # compress the folder with the SRA files
 echo "Compressing SRA Files"
-ls -laR $SRA_DIR
+ls -laR $SRA_DIR/SRR${snakemake_wildcards['sra_acc']}/
 # pigz -9 -r $SRA_DIR/${snakemake_wildcards['run']} -c > ${snakemake_output[0]}
 tar -I pigz -cf ${snakemake_output[0]} $SRA_DIR/SRR${snakemake_wildcards['sra_acc']}/
 
