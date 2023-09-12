@@ -41,12 +41,12 @@ def get_fastq_pe(wildcards):
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
 
 # Path to store the reference genome data 
-ref_path = f"reference_genomes/{reference_genome['SPECIES']}/{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
+ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
 
 rule all: 
     input:
         expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
-        expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
+        # expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
         # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),
         # expand(join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"), sample=sample_accessions)
 

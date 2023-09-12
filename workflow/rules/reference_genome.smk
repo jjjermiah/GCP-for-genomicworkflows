@@ -25,8 +25,9 @@ rule get_annotation:
         "{reference_build_spec}/annotation.gtf",
     params:
         species=reference_genome['SPECIES'],
-        release=reference_genome['DATATYPE'],
+        datatype=reference_genome['DATATYPE'],
         build=reference_genome['BUILD'],
+        release=reference_genome['RELEASE'],
     log:
         "{reference_build_spec}/logs/get_annotation.log",
     wrapper:
@@ -36,9 +37,10 @@ rule get_annotation_gz:
     output:
         "{reference_build_spec}/annotation.gtf.gz",
     params:
-        species="homo_sapiens",
-        release="105",
-        build="GRCh37",
+        species=reference_genome['SPECIES'],
+        datatype=reference_genome['DATATYPE'],
+        build=reference_genome['BUILD'],
+        release=reference_genome['RELEASE'],
         flavor="",  # optional, e.g. chr_patch_hapl_scaff, see Ensembl FTP.
         # branch="plants",  # optional: specify branch
     log:
