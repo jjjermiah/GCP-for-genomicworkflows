@@ -33,7 +33,7 @@ rule download_sra:
     # resources:
     #     disk_mb = get_disk_mb
     script:
-        "scripts/getSRA.sh"
+        "../scripts/getSRA.sh"
 
 
 # by forcing the SRR prefix to sra_acc, this will still work if the user
