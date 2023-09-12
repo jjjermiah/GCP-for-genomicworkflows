@@ -19,13 +19,7 @@ pigz_docker = "docker://jjjermiah/pigz:0.9"
 
 
 # PROJECT_NAME="gCSI"
-
-REF_SPECIES = config["ref"]["SPECIES"]
-REF_DATATYPE = config["ref"]["REF_DATATYPE"]
-REF_BUILD = config["ref"]["REF_BUILD"]
-REF_RELEASE = config["ref"]["REF_RELEASE"]
-
-
+reference_genome = config["ref"]
 ######### 
 # Project specific data
 # PROJECT_NAME = "CCLE"
@@ -38,14 +32,17 @@ sample_accessions = sample_accessions[1]
 # gCSI_metadata = pd.read_csv(gCSI_METADATA_FILE)
 # sample_accessions = "586986_1"
 
+
+# Fastq file naming is not uniform between CCLE, gCSI
 def get_fastq_pe(wildcards):
     if wildcards.PROJECT_NAME == "CCLE":
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.fastq.gz")]
     elif wildcards.PROJECT_NAME == "gCSI":
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
 
+# Path to store the reference genome data 
+ref_path = f"reference_genomes/{reference_genome['SPECIES']}/{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
 
-ref_path = f"reference_genomes/{REF_SPECIES}/{REF_RELEASE}/{REF_BUILD}/"
 rule all: 
     input:
         expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
@@ -65,31 +62,11 @@ rule bowtie2_build:
     shell:
         "v2.6.0/bio/bowtie2/build"
 
-rule CIRI2:
-    input:
-        sam=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"),
-        gtf=join(ref_path, "annotation.gtf"),
-        idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa")
-    output:
-        CIRI2= "results/{PROJECT_NAME}/CIRI2/{sample}.tsv"
-    threads: 20
-    log: "log/{PROJECT_NAME}/CIRI2/{sample}.log"
-    container:
-        "docker://andremrsantos/ciri2:latest"
-    resources:
-        machine_type = machines['small_cpu']['name']
-    shell:
-        """CIRI2 \
-        --thread_num {threads} \
-        --in {input.sam} \
-        --anno {input.gtf} \
-        --out {output.CIRI2} \
-        --ref_file {input.idx[0]} \
-        --log {log}"""
 
 
-include: "workflow/rules/ref_data.smk"
+
+include: "workflow/rules/reference_genome.smk"
 include: "workflow/rules/get_SRA_FASTQ.smk"
 include: "workflow/rules/fastqc.smk"
-include: "workflow/rules/CIRCExplorer.smk"
+include: "workflow/rules/circularRNA.smk"
 include: "workflow/rules/bwa.smk"

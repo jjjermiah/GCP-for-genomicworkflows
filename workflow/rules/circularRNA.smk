@@ -1,4 +1,26 @@
-# CIRCExplorer & STAR
+# CIRI CIRCExplorer & STAR
+
+rule CIRI2:
+    input:
+        sam=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"),
+        gtf=join(ref_path, "annotation.gtf"),
+        idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa")
+    output:
+        CIRI2= "results/{PROJECT_NAME}/CIRI2/{sample}.tsv"
+    threads: 20
+    log: "log/{PROJECT_NAME}/CIRI2/{sample}.log"
+    container:
+        "docker://andremrsantos/ciri2:latest"
+    resources:
+        machine_type = machines['small_cpu']['name']
+    shell:
+        """CIRI2 \
+        --thread_num {threads} \
+        --in {input.sam} \
+        --anno {input.gtf} \
+        --out {output.CIRI2} \
+        --ref_file {input.idx[0]} \
+        --log {log}"""
 
 #Generate Star genome index
 ## genomeSAindexNbases calculated to 9,557860944 (...min(14, log2(GenomeLength)/2 - 1))

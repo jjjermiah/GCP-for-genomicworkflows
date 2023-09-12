@@ -32,7 +32,7 @@ def get_disk_mb(wildcards):
     try:
         # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
         # return the size in MB and add 10% for overhead
-        sra_metadata = pd.read_csv("metadata/sra_metadata.csv")
+        sra_metadata = pd.read_csv(join("../metadata/", "sra_metadata.csv"))
         size_in_gb = sra_metadata[sra_metadata['sra_accession'] == wildcards.sample]['size_in_GB'].values[0]
         return int((size_in_gb * 1000)*1.1)
     except:

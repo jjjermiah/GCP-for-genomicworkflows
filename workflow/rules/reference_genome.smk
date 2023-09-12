@@ -1,5 +1,6 @@
 
 
+
 ################################################################################################
 ################ ENSEMBL
 
@@ -9,10 +10,10 @@ rule get_genome:
     output:
         "{reference_build_spec}/genome.fa",
     params:
-        species=REF_SPECIES,
-        datatype=REF_DATATYPE,
-        build=REF_BUILD,
-        release=REF_RELEASE,
+        species=reference_genome['SPECIES'],
+        datatype=reference_genome['DATATYPE'],
+        build=reference_genome['BUILD'],
+        release=reference_genome['RELEASE'],
     log:
         "{reference_build_spec}/logs/get_genome.log",
     wrapper:
@@ -22,9 +23,9 @@ rule get_annotation:
     output:
         "{reference_build_spec}/annotation.gtf",
     params:
-        species=REF_SPECIES,
-        release=REF_DATATYPE,
-        build=REF_BUILD,
+        species=reference_genome['SPECIES'],
+        release=reference_genome['DATATYPE'],
+        build=reference_genome['BUILD'],
     log:
         "{reference_build_spec}/logs/get_annotation.log",
     wrapper:
