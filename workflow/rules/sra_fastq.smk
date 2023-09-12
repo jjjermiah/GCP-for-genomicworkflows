@@ -47,10 +47,7 @@ rule sra_to_fastq:
         fq1="{any_path}/FASTQ/SRR{sra_acc}_1.fastq",
         fq2="{any_path}/FASTQ/SRR{sra_acc}_2.fastq"
     resources:
-        machine_type = machines['high_mem']['name']
-        disk_mb = 2048*attempt
-    retries:
-        3
+        machine_type = machines['high_mem']['name'],
     group: "sra_fastq"
     threads:
         threads = 8

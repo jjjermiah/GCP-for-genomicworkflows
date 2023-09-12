@@ -27,43 +27,19 @@ rule CIRI2:
 # STAR --runThreadN 4 --runMode genomeGenerate --genomeSAindexNbases 9 --genomeDir /proj/uppstore2017134/stress/circ/star-genome9 \
 # --genomeFastaFiles /*.fa --sjdbGTFfile NC_003112.gff
 
-# rule star_index:
-#     input:
-#         fasta=join(ref_path, "genome.fa"),
-#         gtf=join(ref_path, "annotation.gtf"),
-#     output:
-#         index=join(ref_path, "STAR_INDEX", "chrNameLength.txt"),
-#         directory(join(ref_path, "STAR_INDEX"))
-#     threads: 1
-#     params:
-#         extra="",
-#     log:
-#         "logs/star_index_{genome}.log",
-#     wrapper:
-#         "v2.6.0/bio/star/index"
-
-
-# rule: 
-#     input:
-
-#     output:
-
-#     shell:
-#         """
-#         STAR \
-#         --runThreadN {threads} \
-#         --genomeDir {params.index} \
-#         --readFilesIn {input.reads1} {input.reads2} \
-#         --readFilesCommand zcat \
-#         --outFileNamePrefix {params.outFileNamePrefix} \
-#         --outSAMattributes All \
-#         --outStd BAM_Unsorted \
-#         --outSAMtype BAM Unsorted \
-#         --outSAMattrRGline ID:rnaseq_pipeline SM:{params.sample_id} \
-#         {params.additional_params} \
-#         > {output.bam};
-#         """
-
+rule star_index:
+    input:
+        fasta=join(ref_path, "genome.fa"),
+        gtf=join(ref_path, "annotation.gtf"),
+    output:
+        directory(join(ref_path, "{genome}", "STAR_INDEX"))
+    threads: 1
+    params:
+        extra="",
+    log:
+        "logs/star_index_{genome}.log",
+    wrapper:
+        "v2.6.0/bio/star/index"
 
 # rule create_index_star:
 #     """
@@ -114,6 +90,26 @@ rule CIRI2:
 #         1> {log.stdout} 2> {log.stderr}
 #         """
 
+# rule: 
+#     input:
+
+#     output:
+
+#     shell:
+#         """
+#         STAR \
+#         --runThreadN {threads} \
+#         --genomeDir {params.index} \
+#         --readFilesIn {input.reads1} {input.reads2} \
+#         --readFilesCommand zcat \
+#         --outFileNamePrefix {params.outFileNamePrefix} \
+#         --outSAMattributes All \
+#         --outStd BAM_Unsorted \
+#         --outSAMtype BAM Unsorted \
+#         --outSAMattrRGline ID:rnaseq_pipeline SM:{params.sample_id} \
+#         {params.additional_params} \
+#         > {output.bam};
+#         """
 
 # rule pe_map_genome_star:
 #     """
