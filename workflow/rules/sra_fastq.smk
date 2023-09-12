@@ -55,7 +55,6 @@ rule sra_to_fastq:
         ),
     script:
         "../scripts/convertSRAtoFASTQ.sh"        
-        # "hi.txt"
 
 # rule compress_fastq:
 #     "Compress fastq inplace with pigz at best (9) compression level."
