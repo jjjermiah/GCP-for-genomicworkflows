@@ -45,17 +45,17 @@ fasterq-dump \
     ${snakemake_wildcards['run']} \
     1> ${snakemake_log['stdout']} 2> ${snakemake_log['stderr']} 
 
-# The fastq files should be in the same directory that has the SRR_____ folder with all the files for the run 
-echo "The current working directory is: $(pwd) and has the following fastq files:"
-ls -lah | grep "fastq"
+# # The fastq files should be in the same directory that has the SRR_____ folder with all the files for the run 
+# echo "The current working directory is: $(pwd) and has the following fastq files:"
+# ls -lah | grep "fastq"
 
 
-# TODO:: use the snakemake output as redirect instead of the hardcoded path
-echo "Compressing fastq files"
-echo "pigz -9 --processes ${snakemake[threads]} *.fastq "
-# we want to compress it here using pigz multi-threaded compression 
-pigz -9 --processes ${snakemake[threads]} *.fastq 
+# # TODO:: use the snakemake output as redirect instead of the hardcoded path
+# echo "Compressing fastq files"
+# echo "pigz -9 --processes ${snakemake[threads]} *.fastq "
+# # we want to compress it here using pigz multi-threaded compression 
+# pigz -9 --processes ${snakemake[threads]} *.fastq 
 
-echo "Moving compressed fastq files to $OUTPUT_DIR"
+# echo "Moving compressed fastq files to $OUTPUT_DIR"
 # move it to the output directory 
-mv *.fastq.gz $OUTPUT_DIR
+mv *.fastq $OUTPUT_DIR

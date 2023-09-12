@@ -61,7 +61,7 @@ rule sra_to_fastq:
             config["log_dir"], "{any_path}/FASTQ/SRR", "{sra_acc}", "fasterq_dump.stdout.log"
         ),
     script:
-        "scripts/convertSRAtoFASTQ.sh"        
+        "../scripts/convertSRAtoFASTQ.sh"        
         # "hi.txt"
 
 rule compress_fastq:
@@ -100,7 +100,7 @@ checkpoint get_sra_ref_seqs:
     threads:
         1
     script:
-        "scripts/createSRArefseq.sh"
+        "../scripts/createSRArefseq.sh"
 
 rule download_refseqs:
     output:
