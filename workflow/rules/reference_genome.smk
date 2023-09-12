@@ -5,6 +5,7 @@
 ################ ENSEMBL
 
 # url_prefix = f"ftp://ftp.ensembl.org/pub/{branch}release-{release}/fasta/{species}/{datatype}/{species.capitalize()}.{spec}"
+reference_genome = config["ref"]
 
 rule get_genome:
     output:

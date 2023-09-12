@@ -7,7 +7,7 @@ rule bwa_mem:
     params:
         extra=r"-R '@RG\tID:{wildcards.sample}\tSM:{wildcards.sample}'"
     conda:
-        "envs/bwa_mem.yaml"
+        "../envs/bwa_mem.yaml"
     group:
         "bwa"
     threads: 32

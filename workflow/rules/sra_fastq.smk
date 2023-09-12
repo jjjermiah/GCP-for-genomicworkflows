@@ -1,15 +1,6 @@
 # Note on job groups https://snakemake.readthedocs.io/en/stable/executing/grouping.html#job-grouping: 
 # From Snakemake 7.11 on, Snakemake will request resources for groups by summing across jobs that can be run in parallel, and taking the max of jobs run in series. 
 
-# Rules to specifically get SRA data
-def get_sample_refseqs(wildcards):
-   # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
-    with checkpoints.get_sra_ref_seqs.get(**wildcards).output[0].open() as f:
-        # get first element of comma separated line
-        # first_element=f.readline().split(",")[0]
-        refseqs = ["tools/cachefiles/" + line.split(",")[0] for line in f]
-    # return the size in MB and add 10% for overhead
-    return refseqs
 
 
 # def get_disk_mb(wildcards):
@@ -35,6 +26,16 @@ rule download_sra:
     script:
         "../scripts/getSRA.sh"
 
+
+# Rules to specifically get SRA data
+def get_sample_refseqs(wildcards):
+   # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
+    with checkpoints.get_sra_ref_seqs.get(**wildcards).output[0].open() as f:
+        # get first element of comma separated line
+        # first_element=f.readline().split(",")[0]
+        refseqs = ["tools/cachefiles/" + line.split(",")[0] for line in f]
+    # return the size in MB and add 10% for overhead
+    return refseqs
 
 # by forcing the SRR prefix to sra_acc, this will still work if the user
 # inputs the full SRR prefix to any rule that requires an SRA accession
@@ -89,7 +90,6 @@ rule compress_fastq:
         touch {output}; \
         """
 
-
 # the output here is to remove ambiguity
 checkpoint get_sra_ref_seqs:
     output:
@@ -99,8 +99,8 @@ checkpoint get_sra_ref_seqs:
     retries: 5
     threads:
         1
-    script:
-        "../scripts/createSRArefseq.sh"
+    shell:
+        "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 > {output}"
 
 rule download_refseqs:
     output:

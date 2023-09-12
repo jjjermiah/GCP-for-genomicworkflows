@@ -73,7 +73,7 @@ rule star_index:
 #     container:
 #         "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
 #     conda:
-#         "envs/STAR.yaml"
+#         "../envs/STAR.yaml"
 #     threads: 8
 #     resources:
 #         mem_mb=lambda wildcards, attempt: 32000 * attempt,
