@@ -25,8 +25,6 @@ rule download_sra:
     #     disk_mb = get_disk_mb
     script:
         "../scripts/getSRA.sh"
-
-
 # Rules to specifically get SRA data
 def get_sample_refseqs(wildcards):
    # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
@@ -99,8 +97,10 @@ checkpoint get_sra_ref_seqs:
     retries: 5
     threads:
         1
-    shell:
-        "/usr/local/bin/align-info SRR{wildcards.sra_acc} | cut -d ',' -f1 > {output}"
+    script:
+        "../scripts/create_refseq_list.sh"    
+    # shell:
+    #     "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
 
 rule download_refseqs:
     output:

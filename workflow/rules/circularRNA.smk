@@ -1,4 +1,4 @@
-# CIRI CIRCExplorer & STAR
+# CIRI CIRCExplorer
 
 rule CIRI2:
     input:

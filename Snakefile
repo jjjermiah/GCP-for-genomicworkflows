@@ -46,6 +46,7 @@ ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_
 rule all: 
     input:
         expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
+        directory(join(ref_path, "genome", "STAR_INDEX"))
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
         # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),
         # expand(join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"), sample=sample_accessions)
@@ -70,3 +71,4 @@ include: "workflow/rules/sra_fastq.smk"
 include: "workflow/rules/fastqc.smk"
 include: "workflow/rules/circularRNA.smk"
 include: "workflow/rules/bwa.smk"
+include: "workflow/rules/star.smk"
