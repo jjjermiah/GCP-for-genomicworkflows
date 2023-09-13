@@ -22,12 +22,7 @@ rule build_bwa_index:
         idx=multiext(join(ref_path, "bwa", "{genome}"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     params:
         algorithm="bwtsw",
-        prefix=join(ref_path, "bwa", "{genome}")
-    conda:
-        "../envs/bwa_index.yaml"
     log:
         "logs/bwa_index/{genome}.log"
-    shell:
-        "bwa index -p {params.prefix} -a {params.algorithm} {input.ref} "
-    # wrapper:
-    #     "v2.6.0/bio/bwa/index"
+    wrapper:
+        "v2.6.0/bio/bwa/index"

@@ -3,7 +3,7 @@ rule build_star_index:
         fasta=join(ref_path, "star", "genome.fa"),
         gtf=join(ref_path, "star", "annotation.gtf"),
     output:
-        directory(join(ref_path, "star/index/"))
+        pipe(directory(join(ref_path, "star/index")))
     threads: 32
     resources:
         machine_type = "n1-highmem-32"
@@ -29,7 +29,7 @@ rule star_pe_multi:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz",
         # path to STAR reference genome index
-        idx=join(ref_path, "star/index/")
+        idx=directory(join(ref_path, "star/index"))
     output:
         # see STAR manual for additional output files
         aln="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam",
@@ -38,7 +38,6 @@ rule star_pe_multi:
         chim_junc="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_Chimeric.out.junction",
         unmapped=["{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
     params:
-        outFileNamePrefix="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_",
         extra="--chimScoreMin 1 \
                 --chimSegmentMin 20 \
                 --alignIntronMax 1000000 \
