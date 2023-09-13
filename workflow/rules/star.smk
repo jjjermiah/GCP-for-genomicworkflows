@@ -42,8 +42,10 @@ rule star_pe_multi:
         sj="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_SJ.out.tab",
         chim_junc="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_Chimeric.out.junction",
         unmapped=["{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
-    # log:
-    #     "logs/pe/{sample}.log",
+    conda:
+        "../envs/star.yaml"
+    container:
+        "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
     params:
         # optional parameters
         extra="--chimScoreMin 1 \
@@ -56,8 +58,26 @@ rule star_pe_multi:
                 --chimOutType Junctions SeparateSAMold \
                 --twopassMode Basic"
     threads: 32
-    wrapper:
-        "v2.6.0/bio/star/align"
+    script:
+        "../scripts/map_star.py"
+    # shell:
+    #     """
+    #     STAR \
+    #     --runThreadN {threads} \
+    #     --genomeDir {input.idx} \
+    #     --readFilesIn {input.fq1} {input.fq2} \
+    #     --readFilesCommand zcat \
+    #     --outFileNamePrefix {params.outFileNamePrefix} \
+    #     --outSAMattributes All \
+    #     --outStd BAM_Unsorted \
+    #     > {snakemake.output.aln}"
+    #     " {log}"
+    #     > {output.bam}; \
+    #     2> {log.stderr}
+    #     """
+
+    # wrapper:
+    #     "v2.6.0/bio/star/align"
     # """
     # STAR \
     # --genomeDir $genomeDir \

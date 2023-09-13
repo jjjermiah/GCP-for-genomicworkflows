@@ -4,3 +4,5 @@ getSRA/.snakemake/*
 */.snakemake/*
 .snakemake/*
 */data/*
+
+orcestra-archive/*

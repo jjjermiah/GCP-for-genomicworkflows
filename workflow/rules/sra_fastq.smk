@@ -13,15 +13,16 @@
 #     except:
 #         raise Exception("Please create a sra_metadata.csv using the jupyter notebook in metadata/ or disable the resources parameter in download_sra")
 
-rule download_sra:
-    output:
-        sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz"
-    container:
-        sratoolkit_docker
-    threads:
-        threads = 1
-    script:
-        "../scripts/getSRA.sh"
+# rule download_sra:
+#     output:
+#         sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz"
+#     container:
+#         sratoolkit_docker
+#     threads:
+#         threads = 1
+#     script:
+#         "../scripts/getSRA.sh"
+        
 # Rules to specifically get SRA data
 def get_sample_refseqs(wildcards):
    # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
@@ -56,6 +57,29 @@ rule sra_to_fastq:
     script:
         "../scripts/convertSRAtoFASTQ.sh"        
 
+checkpoint get_sra_ref_seqs:
+    output:
+        "rawdata/ref_lists/{sample}_refs.csv"
+    container:
+        "docker://jjjermiah/sratoolkit:0.2"
+    retries: 5
+    threads:
+        1
+    script:
+        "../scripts/create_refseq_list.sh"    
+
+rule download_refseqs:
+    output:
+        "rawdata/cachefiles/{refseq}"
+    resources:
+        machine_type = machines['med_cpu']['name']
+    retries: 5
+    threads:
+        1
+    shell:
+        "wget https://sra-download.ncbi.nlm.nih.gov/traces/refseq/{wildcards.refseq} -O {output}"
+
+
 # rule compress_fastq:
 #     "Compress fastq inplace with pigz at best (9) compression level."
 #     input:
@@ -79,28 +103,3 @@ rule sra_to_fastq:
 #         1> {log.stdout} 2> {log.stderr}; \
 #         touch {output}; \
 #         """
-
-# the output here is to remove ambiguity
-checkpoint get_sra_ref_seqs:
-    output:
-        "rawdata/ref_lists/{sample}_refs.csv"
-    container:
-        "docker://jjjermiah/sratoolkit:0.2"
-    retries: 5
-    threads:
-        1
-    script:
-        "../scripts/create_refseq_list.sh"    
-    # shell:
-    #     "/usr/local/bin/align-info {wildcards.sra_acc} | cut -d ',' -f1 >${snakemake_output[0]}"
-
-rule download_refseqs:
-    output:
-        "rawdata/cachefiles/{refseq}"
-    resources:
-        machine_type = machines['med_cpu']['name']
-    retries: 5
-    threads:
-        1
-    shell:
-        "wget https://sra-download.ncbi.nlm.nih.gov/traces/refseq/{wildcards.refseq} -O {output}"
