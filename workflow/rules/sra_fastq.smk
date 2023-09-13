@@ -1,8 +1,6 @@
 # Note on job groups https://snakemake.readthedocs.io/en/stable/executing/grouping.html#job-grouping: 
 # From Snakemake 7.11 on, Snakemake will request resources for groups by summing across jobs that can be run in parallel, and taking the max of jobs run in series. 
 
-
-
 # def get_disk_mb(wildcards):
 #     try:
 #         # use wildcards.sample to get the 'size_in_gb' from the sra_metadata
@@ -13,15 +11,16 @@
 #     except:
 #         raise Exception("Please create a sra_metadata.csv using the jupyter notebook in metadata/ or disable the resources parameter in download_sra")
 
-# rule download_sra:
-#     output:
-#         sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz"
-#     container:
-#         sratoolkit_docker
-#     threads:
-#         threads = 1
-#     script:
-#         "../scripts/getSRA.sh"
+rule download_sra:
+    output:
+        sra_zipped="{any_path}/SRA/SRR{sra_acc}.tar.gz"
+    container:
+        sratoolkit_docker
+    group: "sra_fastq"
+    threads:
+        threads = 1
+    script:
+        "../scripts/getSRA.sh"
         
 # Rules to specifically get SRA data
 def get_sample_refseqs(wildcards):
@@ -36,15 +35,16 @@ def get_sample_refseqs(wildcards):
 # it just prevents this rule from being used for non-SRA fastq files
 rule sra_to_fastq:
     input:
-        refs=get_sample_refseqs,
-        sra="rawdata/{PROJECT_NAME}/SRA/{sample}.tar.gz"
+        sra="rawdata/{PROJECT_NAME}/SRA/{sample}.tar.gz",
+        # refs=get_sample_refseqs,
     output:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz"
     resources:
         machine_type = machines['high_mem']['name'],
+    group: "sra_fastq"
     threads:
-        threads = 32
+        threads = 16
     container:
         sratoolkit_docker
     log:
@@ -57,27 +57,27 @@ rule sra_to_fastq:
     script:
         "../scripts/convertSRAtoFASTQ.sh"        
 
-checkpoint get_sra_ref_seqs:
-    output:
-        "rawdata/ref_lists/{sample}_refs.csv"
-    container:
-        "docker://jjjermiah/sratoolkit:0.2"
-    retries: 5
-    threads:
-        1
-    script:
-        "../scripts/create_refseq_list.sh"    
+# checkpoint get_sra_ref_seqs:
+#     output:
+#         "rawdata/ref_lists/{sample}_refs.csv"
+#     container:
+#         "docker://jjjermiah/sratoolkit:0.2"
+#     retries: 5
+#     threads:
+#         1
+#     script:
+#         "../scripts/create_refseq_list.sh"    
 
-rule download_refseqs:
-    output:
-        "rawdata/cachefiles/{refseq}"
-    resources:
-        machine_type = machines['med_cpu']['name']
-    retries: 5
-    threads:
-        1
-    shell:
-        "wget https://sra-download.ncbi.nlm.nih.gov/traces/refseq/{wildcards.refseq} -O {output}"
+# rule download_refseqs:
+#     output:
+#         "rawdata/cachefiles/{refseq}"
+#     resources:
+#         machine_type = machines['med_cpu']['name']
+#     retries: 5
+#     threads:
+#         1
+#     shell:
+#         "wget https://sra-download.ncbi.nlm.nih.gov/traces/refseq/{wildcards.refseq} -O {output}"
 
 
 # rule compress_fastq:
