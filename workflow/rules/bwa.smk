@@ -21,7 +21,5 @@ rule build_bwa_index:
         idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     params:
         algorithm="bwtsw",
-    group:
-        "bwa"
     wrapper:
         "v2.6.0/bio/bwa/index"
