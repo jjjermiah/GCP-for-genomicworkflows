@@ -1,9 +1,9 @@
-rule star_index:
+rule build_star_index:
     input:
-        fasta=join(ref_path, "genome.fa"),
-        gtf=join(ref_path, "annotation.gtf"),
+        fasta=join(ref_path, "star", "genome.fa"),
+        gtf=join(ref_path, "star", "annotation.gtf"),
     output:
-        directory(join(ref_path, "STAR_INDEX"))
+        directory(join(ref_path, "star/index/"))
     threads: 32
     resources:
         machine_type = "n1-highmem-32"
@@ -26,26 +26,19 @@ rule star_index:
 
 rule star_pe_multi:
     input:
-        # use a list for multiple fastq files for one sample
-        # usually technical replicates across lanes/flowcells
-        # fq1=["reads/{sample}_R1.1.fastq", "reads/{sample}_R1.2.fastq"],
-        # # paired end reads needs to be ordered so each item in the two lists match
-        # fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz",
         # path to STAR reference genome index
-        idx=join(ref_path, "STAR_INDEX/")
+        idx=join(ref_path, "star/index/")
     output:
         # see STAR manual for additional output files
         aln="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam",
         log="{procdata}/{PROJECT_NAME}/logs/pe/{sample}/{sample}_Log.out",
         sj="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_SJ.out.tab",
         chim_junc="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_Chimeric.out.junction",
-        # unmapped=["{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
-    container:
-        "docker://quay.io/biocontainers/star:2.7.8a--h9ee0642_1"
+        unmapped=["{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
     params:
-        outFileNamePrefix="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}",
+        outFileNamePrefix="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_",
         extra="--chimScoreMin 1 \
                 --chimSegmentMin 20 \
                 --alignIntronMax 1000000 \
@@ -57,26 +50,22 @@ rule star_pe_multi:
                 --twopassMode Basic \
                 --limitBAMsortRAM 500000000000"
     threads: 32
-    shell:
-        "(STAR \
-        --runThreadN {threads} \
-        --genomeDir {input.idx} \
-        --readFilesIn {input.fq1} {input.fq2} \
-        --readFilesCommand gunzip -c \
-        {params.extra} \
-        --outReadsUnmapped Fastx \
-        --outFileNamePrefix  {params.outFileNamePrefix} \
-        --outStd BAM_SortedByCoordinate \
-        > {output.aln};)"
-        # && \
-        # gzip -c {params.outFileNamePrefix}_unmapped.1.fastq > {params.outFileNamePrefix}_unmapped.1.fastq.gz \
-        # && \
-        # gzip -c {params.outFileNamePrefix}_unmapped.2.fastq > {params.outFileNamePrefix}_unmapped.2.fastq.gz \
+    wrapper:
+        "v2.6.0/bio/star/align"
+    # shell:
+    #     "STAR \
+    #     --runThreadN {threads} \
+    #     --genomeDir {input.idx} \
+    #     --readFilesIn {input.fq1} {input.fq2} \
+    #     --readFilesCommand gunzip -c \
+    #     {params.extra} \
+    #     --outReadsUnmapped Fastx \
+    #     --outFileNamePrefix  {params.outFileNamePrefix} \
+    #     --outStd BAM_SortedByCoordinate \
+    #     > {output.aln};"
 
     # script:
     #     "../scripts/map_star.py"
-    # wrapper:
-    #     "v2.6.0/bio/star/align"
     # """
     # STAR \
     # --genomeDir $genomeDir \

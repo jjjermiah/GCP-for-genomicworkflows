@@ -3,8 +3,8 @@
 rule CIRI2:
     input:
         sam=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"),
-        gtf=join(ref_path, "annotation.gtf"),
-        idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa")
+        gtf=join(ref_path, "bwa", "annotation.gtf"),
+        idx=multiext(join(ref_path, "bwa", "genome"), ".fa", ".amb", ".ann", ".bwt", ".pac", ".sa")
     output:
         CIRI2= "results/{PROJECT_NAME}/CIRI2/{sample}.tsv"
     threads: 20

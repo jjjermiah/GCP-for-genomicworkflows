@@ -40,7 +40,7 @@ def get_fastq_pe(wildcards):
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
 
 # Path to store the reference genome data 
-ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
+ref_path = f"reference_genomes/ENSEMBL/{reference_genome['SPECIES']}/{reference_genome['BUILD']}/release-{reference_genome['RELEASE']}/"
 
 rule all: 
     input:
@@ -50,21 +50,10 @@ rule all:
         # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),
         # expand(join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam"), sample=sample_accessions)
 
-rule bowtie2_build:
-    input:
-        ref=join(ref_path, "genome.fa")
-    output:
-        multiext(join(ref_path, "genome.fa"), "", ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2")
-    conda:
-        "envs/bowtie2.yaml"
-    threads: 
-        8
-    shell:
-        "v2.6.0/bio/bowtie2/build"
-
 include: "workflow/rules/reference_genome.smk"
 include: "workflow/rules/sra_fastq.smk"
 include: "workflow/rules/fastqc.smk"
 include: "workflow/rules/circularRNA.smk"
 include: "workflow/rules/bwa.smk"
 include: "workflow/rules/star.smk"
+include: "workflow/rules/bowtie.smk"

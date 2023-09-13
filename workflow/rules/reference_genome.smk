@@ -6,8 +6,10 @@
 
 # url_prefix = f"ftp://ftp.ensembl.org/pub/{branch}release-{release}/fasta/{species}/{datatype}/{species.capitalize()}.{spec}"
 reference_genome = config["ref"]
+# ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
 
-rule get_genome:
+
+rule get_ENSEMBL_genome:
     output:
         "{reference_build_spec}/genome.fa",
     params:
@@ -20,7 +22,7 @@ rule get_genome:
     wrapper:
         "v2.6.0/bio/reference/ensembl-sequence"
 
-rule get_annotation:
+rule get_ENSEMBL_annotation:
     output:
         "{reference_build_spec}/annotation.gtf",
     params:
@@ -48,8 +50,6 @@ rule get_annotation_gz:
     wrapper:
         "v2.6.0/bio/reference/ensembl-annotation"
 
-
-
 # def get_gencode_annotation(wildcards):
 #     if reference_genome == "GRCh37":
 #         ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/GRCh37_mapping/gencode.v{wildcards.gencode_release}lift37.annotation.gtf.gz"
@@ -61,6 +61,7 @@ rule get_annotation_gz:
 #     input:
 #         get_gencode_annotation
 #     output:
+#         gencode_annotation_file="reference_genomes/Gencode/{reference_genome['SPECIES']}/{reference_genome['RELEASE']}/{reference_genome['BUILD']}/annotation.gtf"
 #         gencode_annotation_file="references/Gencode_human/gencode.v{gencode_release}.annotation.gtf"
 #     shell:
 #         "gzip -d -c {input} > {output}"

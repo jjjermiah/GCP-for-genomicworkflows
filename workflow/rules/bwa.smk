@@ -1,7 +1,8 @@
+
 rule bwa_mem:
     input:
         reads=get_fastq_pe,
-        idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext(join(ref_path, "bwa", "genome"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     output:
         output=join("processed_data/{PROJECT_NAME}/", "alignment/{sample}.sam")
     params:
@@ -16,10 +17,17 @@ rule bwa_mem:
         
 rule build_bwa_index:
     input:
-        ref=join(ref_path, "genome.fa"),
+        ref=join(ref_path, "bwa", "{genome}.fa"),
     output:
-        idx=multiext(join(ref_path, "genome.fa"), "", ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext(join(ref_path, "bwa", "{genome}"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     params:
         algorithm="bwtsw",
-    wrapper:
-        "v2.6.0/bio/bwa/index"
+        prefix=join(ref_path, "bwa", "{genome}")
+    conda:
+        "../envs/bwa_index.yaml"
+    log:
+        "logs/bwa_index/{genome}.log"
+    shell:
+        "bwa index -p {params.prefix} -a {params.algorithm} {input.ref} "
+    # wrapper:
+    #     "v2.6.0/bio/bwa/index"
