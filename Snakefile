@@ -1,4 +1,4 @@
-from os.path import join, basename,dirname
+from os.path import join, basename, dirname, splitext
 import re
 import pandas as pd
 
@@ -25,8 +25,16 @@ reference_genome = config["ref"]
 SRA_METADATA_FILE = "metadata/sra_metadata.csv"
 sra_metadata = pd.read_csv(SRA_METADATA_FILE)
 sample_accessions = sra_metadata["run_accession"].tolist()
-# sample_accessions = 'SRR8615581'
-sample_accessions = sample_accessions[1]
+julia_list = [
+    "SRR8615281", "SRR8615282", "SRR8615300", "SRR8615338", "SRR8615368", "SRR8615369", "SRR8615376",
+    "SRR8615398", "SRR8615459", "SRR8615475", "SRR8615504", "SRR8615506", "SRR8615561", "SRR8615564",
+    "SRR8615580", "SRR8615581", "SRR8615671", "SRR8615709", "SRR8615749", "SRR8615753", "SRR8615788",
+    "SRR8615803", "SRR8615817", "SRR8615854", "SRR8615856", "SRR8615896", "SRR8615924", "SRR8615933",
+    "SRR8615934", "SRR8616011", "SRR8616014", "SRR8616032", "SRR8616033", "SRR8616044", "SRR8616058",
+    "SRR8616142", "SRR8616177", "SRR8618304", "SRR8618306", "SRR8618307"
+]
+# sample_accessions = sample_accessions[1]
+sample_accessions = julia_list
 # SRA_METADATA_FILE = "metadata/gCSI_metadata.csv"
 # gCSI_metadata = pd.read_csv(gCSI_METADATA_FILE)
 # sample_accessions = "586986_1"

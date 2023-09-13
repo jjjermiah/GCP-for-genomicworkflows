@@ -51,33 +51,3 @@ rule star_pe_multi:
     threads: 32
     wrapper:
         "v2.6.0/bio/star/align"
-    # shell:
-    #     "STAR \
-    #     --runThreadN {threads} \
-    #     --genomeDir {input.idx} \
-    #     --readFilesIn {input.fq1} {input.fq2} \
-    #     --readFilesCommand gunzip -c \
-    #     {params.extra} \
-    #     --outReadsUnmapped Fastx \
-    #     --outFileNamePrefix  {params.outFileNamePrefix} \
-    #     --outStd BAM_SortedByCoordinate \
-    #     > {output.aln};"
-
-    # script:
-    #     "../scripts/map_star.py"
-    # """
-    # STAR \
-    # --genomeDir $genomeDir \
-    # --readFilesCommand gunzip -c --readFilesIn $inFile1 $inFile2 \
-    # --runThreadN $nThreads \
-    # --chimSegmentMin $chimSegMin \
-    # --chimScoreMin 1 \
-    # --alignIntronMax $alignIntronMax \
-    # --outFilterMismatchNoverReadLmax $maxMismatchFraction \
-    # --alignTranscriptsPerReadNmax $alignTxPerReadMax \
-    # --twopassMode Basic \
-    # --outSAMtype BAM SortedByCoordinate \
-    # --chimOutType Junctions SeparateSAMold \
-    # --outFilterMultimapNmax 2 \
-    # --outFileNamePrefix $outPrefix
-    # """
