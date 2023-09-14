@@ -18,7 +18,7 @@ sratoolkit_docker= "docker://jjjermiah/sratoolkit:0.2"
 pigz_docker = "docker://jjjermiah/pigz:0.9"
 
 # PROJECT_NAME="gCSI"
-reference_genome = config["ref"]
+
 ######### 
 # Project specific data
 # PROJECT_NAME = "CCLE"
@@ -48,11 +48,16 @@ def get_fastq_pe(wildcards):
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
 
 # Path to store the reference genome data 
-ref_path = f"reference_genomes/ENSEMBL/{reference_genome['SPECIES']}/{reference_genome['BUILD']}/release-{reference_genome['RELEASE']}/"
+reference_genome = config["ref"]
+reference_genome_source = "GENCODE"
+gencode_release = 44
+ref_path = f"reference_genomes/{reference_genome_source}/{reference_genome['SPECIES']}/{reference_genome['BUILD']}/release-{reference_genome['RELEASE']}/"
 
 rule all: 
     input:
-        expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
+        gencode_annotation_file=f"reference_genomes/GENCODE/homo_sapien/GRCh37/release-{gencode_release}/annotation.gtf",
+        gencode_genome_file=f"reference_genomes/GENCODE/homo_sapien/GRCh37/release-{gencode_release}/genome.fa",
+         # expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample=sample_accessions, PROJECT_NAME= "CCLE"),
         # expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE"),
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}.tsv", sample="586986_1", PROJECT_NAME= "gCSI"),
         # expand("{sample}_{split}_fastqc.done", sample=sample_accessions, split=[1,2]),

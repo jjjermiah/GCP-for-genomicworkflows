@@ -4,7 +4,7 @@ rule build_star_index:
         gtf=join(ref_path, "star", "annotation.gtf"),
     output:
         pipe(directory(join(ref_path, "star/index")))
-    threads: 32
+    threads: 16
     resources:
         machine_type = "n1-highmem-32"
     conda:
