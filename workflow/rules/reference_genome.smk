@@ -8,7 +8,6 @@
 reference_genome = config["ref"]
 # ref_path = f"reference_genomes/{reference_genome['SPECIES']}/release-{reference_genome['RELEASE']}/{reference_genome['BUILD']}/"
 
-
 rule get_ENSEMBL_genome:
     output:
         "{reference_build_spec}/genome.fa",
@@ -50,21 +49,28 @@ rule get_annotation_gz:
     wrapper:
         "v2.6.0/bio/reference/ensembl-annotation"
 
-# def get_gencode_annotation(wildcards):
-#     if reference_genome == "GRCh37":
-#         ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/GRCh37_mapping/gencode.v{wildcards.gencode_release}lift37.annotation.gtf.gz"
-#     else:
-#         ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/gencode.v{wildcards.gencode_release}.annotation.gtf.gz"
-#     return FTP.remote(ftp, immediate_close=True, keep_local=True)
 
-# rule annotation:
-#     input:
-#         get_gencode_annotation
-#     output:
-#         gencode_annotation_file="reference_genomes/Gencode/{reference_genome['SPECIES']}/{reference_genome['RELEASE']}/{reference_genome['BUILD']}/annotation.gtf"
-#         gencode_annotation_file="references/Gencode_human/gencode.v{gencode_release}.annotation.gtf"
-#     shell:
-#         "gzip -d -c {input} > {output}"
+# ref_path = f"reference_genomes/ENSEMBL/{reference_genome['SPECIES']}/{reference_genome['BUILD']}/release-{reference_genome['RELEASE']}/"
+
+def get_gencode_annotation(wildcards):
+    if wildcards.ref_build == "GRCh37":
+        if wildcards.species == "homo_sapiens" or "human" or "Gencode_human":
+            ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/GRCh37_mapping/gencode.v{wildcards.gencode_release}lift37.annotation.gtf.gz"
+        else:
+            #do something
+            error
+    else:
+        ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/gencode.v{wildcards.gencode_release}.annotation.gtf.gz"
+    return FTP.remote(ftp, immediate_close=True, keep_local=True)
+
+rule annotation:
+    input:
+        get_gencode_annotation
+    output:
+        gencode_annotation_file="reference_genomes/GENCODE/{species}/{ref_build}/release-{gencode_release}/annotation.gtf"
+        # gencode_annotation_file="references/Gencode_human/gencode.v{gencode_release}.annotation.gtf"
+    shell:
+        "gzip -d -c {input} > {output}"
 
 
 # ## # Use the reference genomes from the google cloud bucket
