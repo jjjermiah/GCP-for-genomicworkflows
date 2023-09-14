@@ -10,7 +10,7 @@ rule bwa_mem:
         extra=r"-R '@RG\tID:{sample}\tSM:{sample}'"
     conda:
         "../envs/bwa_mem.yaml"
-    threads: 32
+    threads: 16
     resources:
         machine_type = machines['high_mem']['name']
     shell:

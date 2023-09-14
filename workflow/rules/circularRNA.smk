@@ -7,7 +7,7 @@ rule CIRI2:
         idx=multiext(join(ref_path, "bwa", "genome"), ".fa", ".amb", ".ann", ".bwt", ".pac", ".sa")
     output:
         CIRI2= "results/{PROJECT_NAME}/CIRI2/{sample}.tsv"
-    threads: 20
+    threads: 16
     log: "log/{PROJECT_NAME}/CIRI2/{sample}.log"
     container:
         "docker://andremrsantos/ciri2:latest"

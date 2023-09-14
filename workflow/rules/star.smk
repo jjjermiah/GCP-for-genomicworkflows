@@ -48,6 +48,6 @@ rule star_pe_multi:
                 --chimOutType Junctions SeparateSAMold \
                 --twopassMode Basic \
                 --limitBAMsortRAM 500000000000"
-    threads: 32
+    threads: 16
     wrapper:
         "v2.6.0/bio/star/align"
