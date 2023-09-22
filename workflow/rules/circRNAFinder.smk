@@ -1,3 +1,4 @@
+#### INCOMPLETE
 rule all:
     input:
         expand("{outDir}/{libname}.s_filteredJunctions_fw.bam", outDir=config["outDir"], libname=config["libnames"])

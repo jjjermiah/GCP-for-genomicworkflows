@@ -113,8 +113,10 @@ foreach my $i (1..$nrLibs){
     print   $makeBamCmd."\n";
     system($makeBamCmd);
     print STDERR "Sorting .bam file...\n";
+    print  $sortBamCmd."\n";
     system($sortBamCmd);
     print STDERR "Indexing .bam file...\n";
+    print  $indexBamCmd."\n";
     system($indexBamCmd);
 
     ######

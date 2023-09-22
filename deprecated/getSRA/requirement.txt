@@ -1,2 +1,0 @@
-pysradb
-google-cloud-sdk
