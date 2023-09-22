@@ -5,4 +5,6 @@ getSRA/.snakemake/*
 .snakemake/*
 */data/*
 
+sandbox_workspace/*
+
 orcestra-archive/*

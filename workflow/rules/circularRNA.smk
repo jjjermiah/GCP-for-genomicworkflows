@@ -26,14 +26,18 @@ rule circRNA_finder:
         log="procdata/{PROJECT_NAME}/logs/pe/{sample}/{sample}_Log.out",
         sj="procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_SJ.out.tab",
         chim_junc="procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_Chimeric.out.junction",
-        unmapped=["procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz","{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
+        unmapped=[
+                "procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.1.fastq.gz",
+                "procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_unmapped.2.fastq.gz"],
     output:
-        filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/_filteredJunctions.bed",
-        GT_AG_filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/_s_filteredJunctions.bed",
-        fw_filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/_s_filteredJunctions_fw.bed",
-        sorted_bam="results/{PROJECT_NAME}/circRNA_finder/Chimeric.out.sorted.bam",
-        sorted_indexed_bam="results/{PROJECT_NAME}/circRNA_finder/Chimeric.out.sorted.bam.bai"
-
+        filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/{sample}/_filteredJunctions.bed",
+        GT_AG_filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/{sample}/_s_filteredJunctions.bed",
+        fw_filteredjunctions="results/{PROJECT_NAME}/circRNA_finder/{sample}/_s_filteredJunctions_fw.bed",
+        sorted_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam",
+        sorted_indexed_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam.bai"
+    script:
+        "scripts/runPostProcessStarAlignment.sh"
+        
 # a) _filteredJunctions.bed: 
     # A bed file with all circular junctions found by the pipeline. 
     # The score column indicates the number reads spanning each junction.

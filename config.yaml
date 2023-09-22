@@ -1,7 +1,7 @@
 ref:
   SPECIES :  "homo_sapiens" 
   DATATYPE : "dna"            # [cdna,cds, dna, ncrna, pep]
-  BUILD : "GRCh38"            # GRCh38 or GRCh37 spec = BUILD (converts build into string depending on 37 or 38)
+  BUILD : "GRCh37"            # GRCh38 or GRCh37 spec = BUILD (converts build into string depending on 37 or 38)
   RELEASE :  "110"
 
 

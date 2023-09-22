@@ -41,7 +41,7 @@ rule sra_to_fastq:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz"
     resources:
-        machine_type = machines['high_cpu']['name'],
+        machine_type = "n1-highmem-32"
     group: "sra_fastq"
     threads:
         threads = 8

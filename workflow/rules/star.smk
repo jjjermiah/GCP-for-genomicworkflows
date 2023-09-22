@@ -1,10 +1,12 @@
 rule build_star_index:
     input:
-        fasta=join(ref_path, "star", "genome.fa"),
-        gtf=join(ref_path, "star", "annotation.gtf"),
+        # fasta=join(ref_path, "star", "genome.fa"),
+        # gtf=join(ref_path, "star", "annotation.gtf"),
+        gtf=f"reference_genomes/GENCODE/homo_sapiens/GRCh38/release-{gencode_release}/annotation.gtf",
+        fasta=f"reference_genomes/GENCODE/homo_sapiens/GRCh38/release-{gencode_release}/genome.fa",
     output:
-        pipe(directory(join(ref_path, "star/index")))
-    threads: 16
+        directory(join(ref_path, "star/index"))
+    threads: 32
     resources:
         machine_type = "n1-highmem-32"
     conda:
@@ -24,7 +26,7 @@ rule build_star_index:
         --genomeDir {output}
         """
 
-rule star_pe_multi:
+rule STAR_align:
     input:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz",
@@ -51,3 +53,4 @@ rule star_pe_multi:
     threads: 16
     wrapper:
         "v2.6.0/bio/star/align"
+
