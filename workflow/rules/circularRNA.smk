@@ -36,7 +36,7 @@ rule circRNA_finder:
         sorted_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam",
         sorted_indexed_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam.bai"
     script:
-        "scripts/runPostProcessStarAlignment.sh"
+        "../scripts_circRNA_finder/runPostProcessStarAlignment.sh"
         
 # a) _filteredJunctions.bed: 
     # A bed file with all circular junctions found by the pipeline. 
