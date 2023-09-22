@@ -36,7 +36,7 @@ rule circRNA_finder:
         sorted_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam",
         sorted_indexed_bam="results/{PROJECT_NAME}/circRNA_finder/{sample}/Chimeric.out.sorted.bam.bai"
     conda:
-        "envs/circRNA_finder.yaml"
+        "../envs/circRNA_finder.yaml"
     script:
         "../scripts_circRNA_finder/runPostProcessStarAlignment.sh"
         
