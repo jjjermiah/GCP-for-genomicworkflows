@@ -1,0 +1,9 @@
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - perl=5.26.2
+  - awk=4.2.1
+  - star=2.7
+  - samtools=1.9

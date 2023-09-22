@@ -49,7 +49,7 @@ my $nrFwSplicedReadsProg = $scriptDir."/nrForwardSplicedReads.pl";
 ## 'Main'
 
 ## Get all names of files and libraries to process
-my @samFiles = `ls $inDir*Chimeric.out.sam`;
+my @samFiles = `ls $inDir*pe_aligned.sam`;
 my @chimericFiles = `ls $inDir*Chimeric.out.junction`;
 my @junctionFiles = `ls $inDir*SJ.out.tab`;
 
