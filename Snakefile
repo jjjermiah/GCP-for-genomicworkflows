@@ -53,7 +53,7 @@ rule all:
     input:
         # expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE"),
         expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="CCLE", sample=sample_accessions),
-        expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=sample_accessions),
+        # expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=sample_accessions),
         # idx=directory(join(ref_path, "star/index")),
         # gencode_annotation_file=f"reference_genomes/GENCODE/homo_sapiens/GRCh37/release-{gencode_release}/annotation.gtf",
         # gencode_genome_file=f"reference_genomes/GENCODE/homo_sapiens/GRCh37/release-{gencode_release}/genome.fa",

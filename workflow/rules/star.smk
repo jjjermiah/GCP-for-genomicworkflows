@@ -5,7 +5,7 @@ rule build_star_index:
         gtf=f"{ref_path}/annotation.gtf",
         fasta=f"{ref_path}/genome.fa",
     output:
-        directory(join(ref_path, "star_index"))
+        directory(join(ref_path, "star/index"))
     threads: 32
     resources:
         machine_type = "n1-highmem-32"
@@ -31,7 +31,7 @@ rule STAR_align:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz",
         # path to STAR reference genome index
-        idx=directory(join(ref_path, "star_index"))
+        idx=directory(join(ref_path, "star/index"))
     output:
         # see STAR manual for additional output files
         aln="{procdata}/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam",
