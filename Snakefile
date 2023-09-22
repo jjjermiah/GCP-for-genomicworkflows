@@ -26,9 +26,9 @@ sample_accessions = sra_metadata["run_accession"].tolist()
 # METADATA from JULIA 
 SRA_METADATA_FILE = "metadata/metadata_julia_SRA_df.csv"
 sra_metadata = pd.read_csv(SRA_METADATA_FILE)
-sample_accessions = sra_metadata["run_accession"].tolist()
+sample_accessions = sra_metadata["Run"].tolist()
 
-
+gCSI_METADATA_FILE = "metadata/gCSI_list.tsv"
 machines = config["machine_type"]
 
 # Fastq file naming is not uniform between CCLE, gCSI
@@ -41,17 +41,19 @@ def get_fastq_pe(wildcards):
 # Path to store the reference genome data 
 reference_genome = config["ref"]
 reference_genome_source = "GENCODE"
+reference_genome_build = "GRCh38"
 gencode_release = 44
 # ref_path = f"reference_genomes/{reference_genome_source}/{reference_genome['SPECIES']}/{reference_genome['BUILD']}/release-{reference_genome['RELEASE']}/"
-ref_path = f"reference_genomes/{reference_genome_source}/{reference_genome['SPECIES']}/GRCh38/release-44/"
+ref_path = f"reference_genomes/{reference_genome_source}/{reference_genome['SPECIES']}/{reference_genome_build}/release-44/"
 
 
-sample_accessions = sample_accessions [:2]
-sample_accessions = ['SRR8615504', 'SRR8615545' ]
+# sample_accessions = sample_accessions [:2]
+# sample_accessions = ['SRR8615504', 'SRR8615545' ]
 rule all: 
     input:
         # expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE"),
         expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="CCLE", sample=sample_accessions),
+        expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=sample_accessions),
         # idx=directory(join(ref_path, "star/index")),
         # gencode_annotation_file=f"reference_genomes/GENCODE/homo_sapiens/GRCh37/release-{gencode_release}/annotation.gtf",
         # gencode_genome_file=f"reference_genomes/GENCODE/homo_sapiens/GRCh37/release-{gencode_release}/genome.fa",
