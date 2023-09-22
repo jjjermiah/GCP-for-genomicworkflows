@@ -18,7 +18,7 @@
 # output_sorted_indexed_bam = ${snakemake_output['sorted_indexed_bam']}
 
 # get directory of input files:
-input_dir=$(dirname ${snakemake_input['aln']})
+input_dir=$(dirname ${snakemake_input[1]})
 output_dir=$(dirname ${snakemake_output['filteredjunctions']})
 
 echo "The inputs are: --starDir ${input_dir}/ --minLen 200 --outDir  ${output_dir}/"
@@ -27,4 +27,9 @@ ls
 
 chmod 777 -R workflow/scripts_circRNA_finder/
 workflow/scripts_circRNA_finder/postProcessStarAlignment.pl --starDir ${input_dir}/ --minLen 200 --outDir ${output_dir}
-ls ${output_dir}
+
+echo "The outputs are:"
+ls -l ${output_dir}
+
+echo "The files in the working directory are:"
+ls -lR 
