@@ -2,10 +2,10 @@
 rule bwa_mem:
     input:
         reads=get_fastq_pe,
-        idx_genome=join(ref_path, "bwa", "genome.fa"),
-        idx=multiext(join(ref_path, "bwa", "genome"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx_genome=join(ref_path, "genome.fa"),
+        idx=multiext(join(ref_path, "genome"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     output:
-        output=join("procdata/{PROJECT_NAME}/", "alignment/{sample}.sam")
+        output=join("procdata/{PROJECT_NAME}/", "bwa/{sample}.sam")
     params:
         extra=r"-R '@RG\tID:{sample}\tSM:{sample}'"
     conda:
@@ -18,9 +18,9 @@ rule bwa_mem:
         
 rule build_bwa_index:
     input:
-        ref=join(ref_path, "bwa", "{genome}.fa"),
+        ref=join(ref_path, "{genome}.fa"),
     output:
-        idx=multiext(join(ref_path, "bwa", "{genome}"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext(join(ref_path, "{genome}"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     params:
         algorithm="bwtsw",
     log:

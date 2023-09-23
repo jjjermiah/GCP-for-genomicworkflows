@@ -83,3 +83,18 @@ rule getGENCODEgenome:
         gencode_genome_file="reference_genomes/GENCODE/{species}/{ref_build}/release-{gencode_release}/genome.fa",
     shell:
         "gzip -d -c {input} > {output}"
+
+def get_gencode_transcriptome(wildcards):
+    if wildcards.ref_build == "GRCh37":
+        ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/GRCh37_mapping/gencode.v{wildcards.gencode_release}lift37.transcripts.fa.gz"
+    else:
+        ftp = f"ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_{wildcards.gencode_release}/gencode.v{wildcards.gencode_release}.transcripts.fa.gz"
+    return HTTP.remote(ftp, keep_local=True)
+
+rule getGENCODEtranscriptome:
+    input:
+        get_gencode_transcriptome
+    output:
+        gencode_genome_file="reference_genomes/GENCODE/{species}/{ref_build}/release-{gencode_release}/transcriptome.fa",
+    shell:
+        "gzip -d -c {input} > {output}"
