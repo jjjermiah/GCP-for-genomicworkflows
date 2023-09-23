@@ -1,6 +1,6 @@
 channels:
   - conda-forge
   - bioconda
-  - nodefaults
+  - defaults
 dependencies:
-  - kallisto =0.50.0
+  - kallisto=0.46

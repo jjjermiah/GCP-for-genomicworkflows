@@ -1,6 +1,14 @@
+rule trim_header:
+	input:
+		fasta=f"{ref_path}/transcriptome.fa",
+	output:
+		fasta=f"{ref_path}/transcriptome.fa.trimmed"
+	shell:
+		"cut -d '|' -f1 {input} > {output}"
+
 rule kallisto_index:
     input:
-        fasta=f"{ref_path}/transcriptome.fa",
+        fasta=f"{ref_path}/transcriptome.fa.trimmed",
     output:
         index=f"{ref_path}/transcriptome.idx",
     params:
@@ -11,14 +19,7 @@ rule kallisto_index:
     conda:
         "../envs/kallisto.yaml"
     shell:
-        """
-        kallisto index \
-            --threads {snakemake.threads} \
-            -i {output.index} \
-            {params.extra} \
-            {input.fasta} \
-            2> {log}
-        """
+        "kallisto index --index={output.index} {input.fasta}"
 
 rule kallisto_quant:
     input:
@@ -36,6 +37,7 @@ rule kallisto_quant:
     shell:
         """
         kallisto quant \
+            --threads {threads} \
             -i {input.index} \
             -o {output} \
             {params.extra} \

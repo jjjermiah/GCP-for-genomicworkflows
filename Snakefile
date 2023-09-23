@@ -62,8 +62,8 @@ ref_build = f"{reference_genome_source}_{reference_genome_build}_v{gencode_relea
 rule all: 
     input:
         # expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE"),
-        expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="CCLE", sample=sample_accessions),
-        expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=gCSI_accessions),
+        # expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="CCLE", sample=sample_accessions),
+        # expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=gCSI_accessions),
         expand("results/{PROJECT_NAME}/kallisto_quant/{ref_build}/{sample}_abundance.tsv", PROJECT_NAME="CCLE", sample=sample_accessions[1], ref_build=ref_build),
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}/{sample}.tsv", PROJECT_NAME= "CCLE", sample=sample_accessions),
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}/{sample}.tsv", PROJECT_NAME= "gCSI", sample=gCSI_accessions),
