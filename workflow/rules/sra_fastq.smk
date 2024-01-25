@@ -40,11 +40,8 @@ rule sra_to_fastq:
     output:
         fq1="rawdata/{PROJECT_NAME}/FASTQ/{sample}_1.fastq.gz",
         fq2="rawdata/{PROJECT_NAME}/FASTQ/{sample}_2.fastq.gz"
-    resources:
-        machine_type = "n1-highmem-32"
-    group: "sra_fastq"
     threads:
-        threads = 8
+        threads = 16
     container:
         sratoolkit_docker
     log:

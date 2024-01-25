@@ -59,12 +59,30 @@ ref_build = f"{reference_genome_source}_{reference_genome_build}_v{gencode_relea
 
 # sample_accessions = sample_accessions [:2]
 # sample_accessions = ['SRR8615504', 'SRR8615545' ]
+fastqs = ["SRR8615372_1.fastq.gz",
+"SRR8615372_2.fastq.gz",
+"SRR8615629_1.fastq.gz",
+"SRR8615629_2.fastq.gz",
+"SRR8615676_1.fastq.gz",
+"SRR8615676_2.fastq.gz",
+"SRR8615705_1.fastq.gz",
+"SRR8615705_2.fastq.gz",
+"SRR8615722_1.fastq.gz",
+"SRR8615722_2.fastq.gz",
+"SRR8615808_1.fastq.gz",
+"SRR8615808_2.fastq.gz",
+"SRR8616080_1.fastq.gz",
+"SRR8616080_2.fastq.gz",
+"SRR8616200_1.fastq.gz",
+"SRR8616200_2.fastq.gz"]
+
 rule all: 
     input:
+        expand("rawdata/CCLE/FASTQ/{file}", file=fastqs),
         # expand("procdata/{PROJECT_NAME}/star/pe/{sample}/{sample}_pe_aligned.sam", sample=sample_accessions, PROJECT_NAME= "CCLE"),
         # expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="CCLE", sample=sample_accessions),
         # expand("results/{PROJECT_NAME}/circRNA_finder/{sample}/{sample}_filteredJunctions.bed", PROJECT_NAME="gCSI", sample=gCSI_accessions),
-        expand("results/{PROJECT_NAME}/kallisto_quant/{ref_build}/{sample}_abundance.tsv", PROJECT_NAME="CCLE", sample=sample_accessions[1], ref_build=ref_build),
+        # expand("results/{PROJECT_NAME}/kallisto_quant/{ref_build}/{sample}_abundance.tsv", PROJECT_NAME="CCLE", sample=sample_accessions[1], ref_build=ref_build),
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}/{sample}.tsv", PROJECT_NAME= "CCLE", sample=sample_accessions),
         # expand("results/{PROJECT_NAME}/CIRI2/{sample}/{sample}.tsv", PROJECT_NAME= "gCSI", sample=gCSI_accessions),
         # idx=directory(join(ref_path, "star/index")),
@@ -81,7 +99,7 @@ def get_fastq_pe(wildcards):
         return [join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_1.rnaseq.fastq.gz"), join("rawdata/{PROJECT_NAME}/", "FASTQ/{sample}_2.rnaseq.fastq.gz")]
 
 include: "workflow/rules/reference_genome.smk"
-# include: "workflow/rules/sra_fastq.smk"
+include: "workflow/rules/sra_fastq.smk"
 include: "workflow/rules/kallisto.smk"
 include: "workflow/rules/fastqc.smk"
 include: "workflow/rules/circularRNA.smk"
